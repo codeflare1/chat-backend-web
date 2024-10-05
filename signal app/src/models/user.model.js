@@ -12,10 +12,15 @@ const userSchema = mongoose.Schema(
       trim: true,
     },
     lastName: {
-        type: String,
-        required: false,
-        trim: true,
-      },
+      type: String,
+      required: false,
+      trim: true,
+    },
+    image: {
+      type: String,
+      required: false,
+      trim: true,
+    },
     email: {
       type: String,
       required: false,
@@ -30,7 +35,7 @@ const userSchema = mongoose.Schema(
     },
     pin: {
       type: String,
-      required: true,
+      required: false,
       trim: true,
       minlength: 4,
     },

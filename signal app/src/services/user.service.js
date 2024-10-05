@@ -3,11 +3,11 @@ const { User } = require('../models');
 const ApiError = require('../utils/ApiError');
 const logger = require('../config/logger');
 
-const createUser = async (userBody) => {
+const createUser = async (userBody, image) => {
   if (await User.isEmailTaken(userBody.email)) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
   }
-  return User.create(userBody);
+  return User.create({...userBody, image});
 };
 
 const queryUsers = async (filter, options) => {

@@ -1,9 +1,15 @@
 const httpStatus = require('http-status');
 const catchAsync = require('../utils/catchAsync');
 const { authService, userService, tokenService, emailService } = require('../services');
+const {uploadFileS3} = require('../config/upload-image');
 
 const register = catchAsync(async (req, res) => {
-  const user = await userService.createUser(req.body);
+  const file = req.file;
+  let imageURI;
+  if(file) {
+    imageURI = await uploadFileS3(file);
+  }
+  const user = await userService.createUser(req.body, imageURI.Location);
   const tokens = await tokenService.generateAuthTokens(user);
   res.status(httpStatus.CREATED).send({ user, tokens });
 });

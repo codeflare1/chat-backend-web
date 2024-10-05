@@ -1,32 +1,12 @@
 const express = require('express');
-const bookingRoute = require('./booking.route');
-const roomRoute = require('./room.route');
-const propertyRoute = require('./property.route');
-const businessRoute = require('./business.route');
-const commonRoute = require('./common.route');
+const authRoute = require('./auth.route');
 
 const router = express.Router();
 
 const defaultRoutes = [
   {
-    path: '/booking',
-    route: bookingRoute,
-  },
-  {
-    path: '/business',
-    route: businessRoute,
-  },
-  {
-    path: '/room',
-    route: roomRoute,
-  },
-  {
-    path: '/property',
-    route: propertyRoute,
-  },
-  {
-    path: '/common',
-    route: commonRoute,
+    path: '/auth',
+    route: authRoute,
   }
 ];
 
