@@ -3,11 +3,19 @@ const { User } = require('../models');
 const ApiError = require('../utils/ApiError');
 const logger = require('../config/logger');
 
-const createUser = async (userBody, image) => {
-  if (await User.isEmailTaken(userBody.email)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
-  }
-  return User.create({...userBody, image});
+const createUser = async (req, image) => {
+  const user = await User.findOneAndUpdate({
+    phoneNumber: req.user.phoneNumber
+  }, 
+  {...req.body, image}, 
+  {new: true}
+  );
+
+  if(!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'user not found');
+  };
+
+  return user;
 };
 
 const queryUsers = async (filter, options) => {
@@ -21,6 +29,11 @@ const getUserById = async (id) => {
 
 const getUserByEmail = async (email) => {
   return User.findOne({ email });
+};
+
+const getUserByPhoneNumber = async (phoneNumber) => {
+  console.log('phoneNumber', phoneNumber);
+  return User.findOne({ phoneNumber });
 };
 
 const updateUserById = async (userId, updateBody) => {
@@ -52,4 +65,5 @@ module.exports = {
   getUserByEmail,
   updateUserById,
   deleteUserById,
+  getUserByPhoneNumber,
 };

@@ -3,11 +3,31 @@ const tokenService = require('./token.service');
 const Token = require('../models/token.model');
 const ApiError = require('../utils/ApiError');
 const { tokenTypes } = require('../config/tokens');
+const { User } = require('../models');
+const { sendSMS } = require('../config/aws-messaging');
+const userService = require('./user.service');
 
-const loginUserWithEmailAndPassword = async (email, password) => {
-  const user = await userService.getUserByEmail(email);
-  if (!user || !(await user.isPasswordMatch(password))) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');
+const sendOtp = async (userBody) => {
+  const { phoneNumber, method } = userBody;
+  if (method === 'register') {
+    if (await User.isPhoneNumberTaken(phoneNumber)) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Phone number already taken');
+    }
+  }
+  else if(method === 'forgot-pin') {
+    if (!await User.isPhoneNumberTaken(phoneNumber)) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Phone number does not exist');
+    }
+  };
+
+  const notification = await sendSMS(phoneNumber);
+  return notification;
+};
+
+const login = async (userBody) => {
+  const user = await userService.getUserByPhoneNumber(userBody.phoneNumber);
+  if (!user || !(await user.isPinMatch(userBody.pin))) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect phoneNumber or pin');
   }
   return user;
 };
@@ -62,10 +82,28 @@ const verifyEmail = async (verifyEmailToken) => {
   }
 };
 
+const createPin = async(req) => {
+  const {pin, confirmPin} = req.body;
+  if (pin !== confirmPin) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'both pin should be match');
+  };
+
+  const updatedUser = await User.findOne({ phoneNumber: req.user.phoneNumber });
+  if (!updatedUser) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  }
+  updatedUser.pin = pin;
+
+  await updatedUser.save();
+  return updatedUser;
+};
+
 module.exports = {
-  loginUserWithEmailAndPassword,
+  sendOtp,
+  login,
   logout,
   refreshAuth,
   resetPassword,
   verifyEmail,
+  createPin
 };

@@ -21,18 +21,6 @@ const userSchema = mongoose.Schema(
       required: false,
       trim: true,
     },
-    email: {
-      type: String,
-      required: false,
-      unique: true,
-      trim: true,
-      lowercase: true,
-      validate(value) {
-        if (!validator.isEmail(value)) {
-          throw new Error('Invalid email');
-        }
-      },
-    },
     pin: {
       type: String,
       required: false,
@@ -65,23 +53,28 @@ userSchema.statics.isEmailTaken = async function (email, excludeUserId) {
   return !!user;
 };
 
+userSchema.statics.isPhoneNumberTaken = async function (phoneNumber) {
+  const user = await this.findOne({ phoneNumber});
+  return !!user;
+};
+
 /**
  * Check if password matches the user's password
  * @param {string} password
  * @returns {Promise<boolean>}
  */
-// userSchema.methods.isPasswordMatch = async function (password) {
-//   const user = this;
-//   return bcrypt.compare(password, user.password);
-// };
+userSchema.methods.isPinMatch = async function (pin) {
+  const user = this;
+  return bcrypt.compare(pin, user.pin);
+};
 
-// userSchema.pre('save', async function (next) {
-//   const user = this;
-//   if (user.isModified('password')) {
-//     user.password = await bcrypt.hash(user.password, 8);
-//   }
-//   next();
-// });
+userSchema.pre('save', async function (next) {
+  const user = this;
+  if (user.isModified('pin')) {
+    user.pin = await bcrypt.hash(user.pin, 8);
+  }
+  next();
+});
 
 /**
  * @typedef User

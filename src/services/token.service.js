@@ -6,6 +6,7 @@ const { Token } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { tokenTypes } = require('../config/tokens');
 const { userTypes } = require('../constant/constant');
+const userService = require('./user.service');
 
 const generateToken = (userId, userType, expires, type, secret = config.jwt.secret) => {
   const payload = {
@@ -57,7 +58,7 @@ const generateAuthTokens = async (user, userType) => {
 };
 
 const generateResetPasswordToken = async (userBody) => {
-  const user = await checkUserByEmail(userBody.email, userBody.userType);
+  const user = await checkUserByEmail(userBody.email);
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'No users found with this email');
   }
@@ -75,22 +76,7 @@ const generateVerifyEmailToken = async (user) => {
 };
 
 const checkUserByEmail = async (email, role) => {
- let userData; 
-  switch (role) {
-    case userTypes.USER:
-      userData = await userService.getUserByEmail(email);
-      break;
-    case userTypes.OWNER:
-      userData = await commonService.getOwnerByEmail(email);
-      break;
-    case userTypes.ADMIN:
-      userData = await userService.getAdminByEmail(email);
-      break;
-    case userTypes.SUBADMIN:
-      userData = await userService.getSubAdminByEmail(email);
-      break;
-  };
-  return userData;
+  return userService.getUserByEmail(email);
 };
 
 module.exports = {

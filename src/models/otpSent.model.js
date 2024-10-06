@@ -1,3 +1,17 @@
-module.exports.Token = require('./token.model');
-module.exports.User = require('./user.model');
-module.exports.Otp = require('./otpSent.model');
+const mongoose = require('mongoose');
+
+const otpSentSchema = new mongoose.Schema(
+  {
+    otp: { type: String, default: null },
+    phoneNumber: { type: String, default: null },
+    lastOtpSentTime: { type: Date, default: null },
+    method: { type: String, default: null },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+const Otp = mongoose.model('Otp', otpSentSchema);
+
+module.exports = Otp;

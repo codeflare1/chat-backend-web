@@ -35,7 +35,6 @@ const sendEmail = async (to, subject, text) => {
 const sendResetPasswordEmail = async (to, token) => {
   const subject = 'Reset password';
   // replace this url with the link to the reset password page of your front-end app
-  const resetPasswordUrl = `http://link-to-app/reset-password?token=${token}`;
   const code = Math.floor(1000 + Math.random() * 9000);
   const otpObject = {
     otp: code,
@@ -44,8 +43,7 @@ const sendResetPasswordEmail = async (to, token) => {
     lastOtpSentTime: new Date(),
   };
   await Otp.create(otpObject);
-  const text = `Dear user, use this verification code ${code}
-To reset your password or click on this link: ${resetPasswordUrl}
+  const text = `Dear user, use this verification code ${code} to reset your password
 If you did not request any password resets, then ignore this email.`;
   await sendEmail(to, subject, text);
 };
@@ -68,20 +66,21 @@ If you did not create an account, then ignore this email.`;
   await sendEmail(to, subject, text);
 };
 
-const verifyOtp = async (otp, email) => {
+const verifyOtp = async (otp, phoneNumber) => {
+  console.log('otp==>', otp, phoneNumber);
   const isOtpValid = await Otp.findOne({
-    $and: [{ otp }, { email }],
+    $and: [{ otp }, { phoneNumber }],
   });
 
   if (!isOtpValid) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'No users found with this email');
+    throw new ApiError(httpStatus.NOT_FOUND, 'No users found with this phoneNumber');
   }
 
-  if (new Date().getTime() > new Date(isOtpValid.lastOtpSentTime).getTime() + 1 * 60 * 1000) {
+  if (new Date().getTime() > new Date(isOtpValid.lastOtpSentTime).getTime() + 10 * 60 * 1000) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Otp Expired!');
   }
 
-  await Otp.deleteMany({ email });
+  await Otp.deleteMany({ phoneNumber });
 };
 
 module.exports = {
