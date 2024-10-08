@@ -49,12 +49,13 @@ If you did not create an account, then ignore this email.`;
 
 const verifyOtp = async (otp, phoneNumber) => {
   console.log('otp==>', otp, phoneNumber);
+
   const isOtpValid = await Otp.findOne({
     $and: [{ otp }, { phoneNumber }],
   });
 
   if (!isOtpValid) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'No users found with this phoneNumber');
+    throw new ApiError(httpStatus.NOT_FOUND, 'otp is not valid');
   }
 
   if (new Date().getTime() > new Date(isOtpValid.lastOtpSentTime).getTime() + 10 * 60 * 1000) {
