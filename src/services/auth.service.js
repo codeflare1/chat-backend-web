@@ -4,7 +4,7 @@ const Token = require('../models/token.model');
 const ApiError = require('../utils/ApiError');
 const { tokenTypes } = require('../config/tokens');
 const { User } = require('../models');
-const { sendSMS } = require('../config/aws-messaging');
+const { sendSMS } = require('../config/twilio.config');
 const userService = require('./user.service');
 
 const sendOtp = async (userBody) => {
@@ -14,7 +14,7 @@ const sendOtp = async (userBody) => {
       throw new ApiError(httpStatus.BAD_REQUEST, 'Phone number already taken');
     }
   }
-  else if(method === 'forgot-pin') {
+  else if (method === 'forgot-pin') {
     if (!await User.isPhoneNumberTaken(phoneNumber)) {
       throw new ApiError(httpStatus.BAD_REQUEST, 'Phone number does not exist');
     }
@@ -25,9 +25,8 @@ const sendOtp = async (userBody) => {
 };
 
 const login = async (userBody) => {
-  const user = await userService.getUserByPhoneNumber(userBody.phoneNumber);
   if (!user || !(await user.isPinMatch(userBody.pin))) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect phoneNumber or pin');
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect pin');
   }
   return user;
 };
@@ -82,8 +81,8 @@ const verifyEmail = async (verifyEmailToken) => {
   }
 };
 
-const createPin = async(req) => {
-  const {pin, confirmPin} = req.body;
+const createPin = async (req) => {
+  const { pin, confirmPin } = req.body;
   if (pin !== confirmPin) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'both pin should be match');
   };
@@ -98,6 +97,15 @@ const createPin = async(req) => {
   return updatedUser;
 };
 
+const uploadUserDocument = async (req, image) => {
+  const user = await User.findOneAndUpdate({ _id: req.user._id }, { userDocument: image }, { set: true });
+  if(!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  };
+
+  return user;
+}
+
 module.exports = {
   sendOtp,
   login,
@@ -105,5 +113,6 @@ module.exports = {
   refreshAuth,
   resetPassword,
   verifyEmail,
-  createPin
+  createPin,
+  uploadUserDocument
 };

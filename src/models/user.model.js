@@ -32,6 +32,11 @@ const userSchema = mongoose.Schema(
       required: false,
       trim: true,
     },
+    userDocument: {
+      type: String,
+      required: false,
+    },
+
   },
   {
     timestamps: true,
