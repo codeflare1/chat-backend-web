@@ -25,8 +25,9 @@ const sendOtp = async (userBody) => {
 };
 
 const login = async (userBody) => {
-  if (!user || !(await user.isPinMatch(userBody.pin))) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect pin');
+  const user =  await User.isPhoneNumberTaken(userBody.phoneNumber);
+  if (!user || !(await User.isPinMatch(userBody.pin))) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect phoneNumber & pin');
   }
   return user;
 };

@@ -9,6 +9,7 @@ const register = {
 
 const login = {
   body: Joi.object().keys({
+    phoneNumber: Joi.string().required(),
     pin: Joi.string().required(),
   }),
 };
