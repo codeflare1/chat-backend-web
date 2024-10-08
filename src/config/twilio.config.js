@@ -18,7 +18,7 @@ const sendSMS = async (to) => {
     return 'OTP sent successfully';
   } catch (err) {
     console.log("sendSMS error==>", err);
-    throw new ApiError(httpStatus.BAD_REQUEST, error.message);
+    throw new ApiError(httpStatus.BAD_REQUEST, err.message);
   }
 };
 
