@@ -2,6 +2,7 @@ const config = require('./config');
 const client = require("twilio")(config.twilio.acountSid, config.twilio.authToken);
 const ApiError = require('../utils/ApiError');
 const { Otp } = require('../models');
+const httpStatus = require('http-status');
 
 const sendSMS = async (to) => {
   const otp = Math.floor(1000 + Math.random() * 9000);
