@@ -12,7 +12,7 @@ const register = catchAsync(async (req, res) => {
   }
   const user = await userService.createUser(req, imageURI?.Location);
   if (user) {
-    res.status(httpStatus.OK).send({ success: true, user });
+    res.status(httpStatus.OK).send({ success: true, user, message: 'profile created successfully' });
   } else {
     res.status(httpStatus.BAD_REQUEST).send({ success: true, message: 'User registration failed' });
   }
