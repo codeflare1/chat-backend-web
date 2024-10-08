@@ -49,14 +49,12 @@ const verifyOtp = catchAsync(async (req, res) => {
   const number = `+${phoneNumber}`;
   await emailService.verifyOtp(otp, number);
   let user;
-
-  if (method === 'register') {
-    user = await User.create({ phoneNumber: number });
-  } else {
+  let tokens;
+  if (method === 'forgot-pin') {
     user = await User.findOne({ phoneNumber: number });
-  }
+    tokens = await tokenService.generateAuthTokens(user);
+  };
 
-  const tokens = await tokenService.generateAuthTokens(user);
   res.status(httpStatus.OK).send({ success: true, data: 'OTP verified successfully', tokens });
 });
 
@@ -87,7 +85,11 @@ const verifyEmail = catchAsync(async (req, res) => {
 
 const setPin = catchAsync(async (req, res) => {
   const user = await authService.createPin(req);
-  res.status(httpStatus.OK).send({success: true, user});
+  let tokens;
+  if(req.body.method === 'register') {
+    tokens = await tokenService.generateAuthTokens(user);
+  }
+  res.status(httpStatus.OK).send({success: true, user, tokens});
 });
 
 const loginWithPin = catchAsync(async (req, res) => {

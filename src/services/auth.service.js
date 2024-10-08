@@ -84,19 +84,23 @@ const verifyEmail = async (verifyEmailToken) => {
 };
 
 const createPin = async (req) => {
-  const { pin, confirmPin } = req.body;
+  const { pin, confirmPin, method, phoneNumber } = req.body;
   if (pin !== confirmPin) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'both pin should be match');
   };
-
-  const updatedUser = await User.findOne({ phoneNumber: req.user.phoneNumber });
-  if (!updatedUser) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  let user;
+  if(method === 'register') {
+    user = await User.create({pin, phoneNumber});
+  } else {
+    user = await User.findOne({ phoneNumber });
+    if (!user) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+    }
+    user.pin = pin;
+    await user.save();
   }
-  updatedUser.pin = pin;
-
-  await updatedUser.save();
-  return updatedUser;
+  
+  return user;
 };
 
 const loginWithPin = async (req) => {

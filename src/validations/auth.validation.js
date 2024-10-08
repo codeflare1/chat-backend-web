@@ -40,6 +40,8 @@ const createPin = {
   body: Joi.object().keys({
     pin: Joi.string().required(),
     confirmPin: Joi.string().required(),
+    method: Joi.string().required(),
+    phoneNumber: Joi.string().required(),
   }),
 };
 
