@@ -14,19 +14,19 @@ const register = catchAsync(async (req, res) => {
   if (user) {
     res.status(httpStatus.OK).send({ user });
   } else {
-    res.status(httpStatus.BAD_REQUEST).send({ message: 'User registration failed' });
+    res.status(httpStatus.BAD_REQUEST).send({ success: true, message: 'User registration failed' });
   }
 });
 
 const login = catchAsync(async (req, res) => {
   const user = await authService.login(req.body);
   const tokens = await tokenService.generateAuthTokens(user);
-  res.status(httpStatus.OK).send({ user, tokens });
+  res.status(httpStatus.OK).send({ success: true, user, tokens });
 });
 
 const sendOtp = catchAsync(async (req, res) => {
   const response = await authService.sendOtp(req.body);
-  res.status(httpStatus.OK).send({ response });
+  res.status(httpStatus.OK).send({ success: true, response });
 });
 
 const logout = catchAsync(async (req, res) => {
@@ -41,7 +41,7 @@ const refreshTokens = catchAsync(async (req, res) => {
 
 const forgotPin = catchAsync(async (req, res) => {
   const response = await authService.sendOtp(req.body);
-  res.status(httpStatus.OK).send({ response });
+  res.status(httpStatus.OK).send({ success: true, response });
 });
 
 const verifyOtp = catchAsync(async (req, res) => {
@@ -87,12 +87,12 @@ const verifyEmail = catchAsync(async (req, res) => {
 
 const setPin = catchAsync(async (req, res) => {
   const user = await authService.createPin(req);
-  res.status(httpStatus.OK).send({status: 'success', user});
+  res.status(httpStatus.OK).send({success: true, user});
 });
 
 const loginWithPin = catchAsync(async (req, res) => {
   const user = await authService.loginWithPin(req);
-  res.status(httpStatus.OK).send({status: 'success', user});
+  res.status(httpStatus.OK).send({success: true, user});
 });
 
 const uploadUserDocument = catchAsync(async (req, res) => {
@@ -102,7 +102,7 @@ const uploadUserDocument = catchAsync(async (req, res) => {
     imageURI = await uploadFileS3(file);
   }
   const uploadUserDocument = await authService.uploadUserDocument(req, imageURI.Location);
-  res.status(httpStatus.OK).send({status: 'success', uploadUserDocument});
+  res.status(httpStatus.OK).send({success: true, uploadUserDocument});
 });
 
 const verifyOtpByEmail = async (otp, email) => {
