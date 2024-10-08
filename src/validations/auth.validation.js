@@ -43,11 +43,18 @@ const createPin = {
   }),
 };
 
+const loginWithPin = {
+  body: Joi.object().keys({
+    pin: Joi.string().required(),
+  }),
+};
+
 module.exports = {
   register,
   login,
   sendOtp,
   verifyOtp,
   createPin,
-  forgotPin
+  forgotPin,
+  loginWithPin
 };

@@ -15,6 +15,7 @@ router.post('/send-otp', validate(authValidation.sendOtp), authController.sendOt
 router.get('/verify-otp', validate(authValidation.verifyOtp), authController.verifyOtp);
 router.put('/set-pin', auth(), validate(authValidation.createPin), authController.setPin);
 router.post('/forgot-pin', auth(), validate(authValidation.forgotPin), authController.forgotPin);
+router.post('/loginWithPin', auth(), validate(authValidation.loginWithPin), authController.loginWithPin);
 router.put('/upload-document', auth(),upload.single('uploadDocument'), authController.uploadUserDocument);
 
 module.exports = router;

@@ -58,6 +58,7 @@ const verifyOtp = async (otp, phoneNumber) => {
   }
 
   if (new Date().getTime() > new Date(isOtpValid.lastOtpSentTime).getTime() + 10 * 60 * 1000) {
+    await Otp.deleteMany({ phoneNumber });
     throw new ApiError(httpStatus.NOT_FOUND, 'Otp Expired!');
   }
 

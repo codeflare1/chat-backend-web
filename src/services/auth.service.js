@@ -99,6 +99,14 @@ const createPin = async (req) => {
   return updatedUser;
 };
 
+const loginWithPin = async (req) => {
+  const user =  await User.findOne({phoneNumber: req.user._id});
+  if (!user || !(await user.isPinMatch(userBody.pin))) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect phoneNumber & pin');
+  }
+  return user;
+};
+
 const uploadUserDocument = async (req, image) => {
   const user = await User.findOneAndUpdate({ _id: req.user._id }, { userDocument: image }, { set: true });
   if(!user) {
@@ -116,5 +124,6 @@ module.exports = {
   resetPassword,
   verifyEmail,
   createPin,
-  uploadUserDocument
+  uploadUserDocument,
+  loginWithPin
 };

@@ -90,6 +90,11 @@ const setPin = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send({status: 'success', user});
 });
 
+const loginWithPin = catchAsync(async (req, res) => {
+  const user = await authService.loginWithPin(req);
+  res.status(httpStatus.OK).send({status: 'success', user});
+});
+
 const uploadUserDocument = catchAsync(async (req, res) => {
   const file = req.file;
   let imageURI;
@@ -114,6 +119,8 @@ const verifyOtpByEmail = async (otp, email) => {
 };
 
 
+
+
 module.exports = {
   register,
   login,
@@ -125,7 +132,9 @@ module.exports = {
   sendVerificationEmail,
   verifyEmail,
   verifyOtp,
+  loginWithPin,
   setPin,
   verifyOtpByEmail,
   uploadUserDocument,
+  loginWithPin,
 };
