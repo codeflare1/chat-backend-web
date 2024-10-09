@@ -94,7 +94,7 @@ const setPin = catchAsync(async (req, res) => {
 
 const loginWithPin = catchAsync(async (req, res) => {
   const user = await authService.loginWithPin(req);
-  res.status(httpStatus.OK).send({success: true, user});
+  res.status(httpStatus.OK).send({success: true , user});
 });
 
 const uploadUserDocument = catchAsync(async (req, res) => {

@@ -104,9 +104,9 @@ const createPin = async (req) => {
 };
 
 const loginWithPin = async (req) => {
-  const user =  await User.findOne({phoneNumber: req.user._id});
+  const user =  await User.findOne({_id: req.user._id});
   if (!user || !(await user.isPinMatch(userBody.pin))) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect phoneNumber & pin');
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect pin');
   }
   return user;
 };
