@@ -99,6 +99,7 @@ const loginWithPin = catchAsync(async (req, res) => {
 
 const uploadUserDocument = catchAsync(async (req, res) => {
   const files = req.files;
+  console.log('files12', files);
   let imageURI;
   if (files) {
     imageURI = await uploadFileS3(files);
