@@ -33,7 +33,7 @@ const userSchema = mongoose.Schema(
       trim: true,
     },
     userDocument: {
-      type: String,
+      type: [String],
       required: false,
     },
 

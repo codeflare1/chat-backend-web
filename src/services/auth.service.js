@@ -112,7 +112,8 @@ const loginWithPin = async (req) => {
 };
 
 const uploadUserDocument = async (req, image) => {
-  const user = await User.findOneAndUpdate({ _id: req.user._id }, { userDocument: image }, { set: true });
+  const user = await User.findOneAndUpdate({ _id: req.user._id }, { userDocument: [image[0].imageURI, image[1].imageURI] }, { set: true });
+  console.log('user', user);
   if(!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   };

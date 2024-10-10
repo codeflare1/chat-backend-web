@@ -29,11 +29,11 @@ function uploadFileS3(files) {
         try {
           let fileType = 'other';
           const imageResponse = await uploadFile(file, fileType);
-          console.log('Uploaded image:', imageResponse.Location);
+          console.log('Uploaded image:', imageResponse);
           await unlinkFile(file.path);
           resolve({ success: true, imageURI: imageResponse.Location, fileType });
         } catch (err) {
-          console.log("Error uploading file:", err);
+          console.log("Error uploading file:", err.message);
           resolve({ success: false });
         }
       });
@@ -43,8 +43,8 @@ function uploadFileS3(files) {
   }else {
     const imageResponse =  uploadFile(files, files.fieldname);
     return imageResponse;
-  }
-}
+  };
+};
 
 
 module.exports = {

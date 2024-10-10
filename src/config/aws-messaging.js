@@ -8,13 +8,11 @@ AWS.config.update({
   accessKeyId: config.aws.accessId,  // Replace with your AWS Access Key ID
   secretAccessKey: config.aws.secretKey // Replace with your AWS Secret Access Key
 });
-
 const sns = new AWS.SNS();
-
 const sendSMS = async (phoneNumber) => {
   const otp = Math.floor(1000 + Math.random() * 9000);
   const params = {
-    Message: `<#> ${otp} is OTP for Gatsbyte Chat login, Do not share OTP with anyone`,
+    Message: `<#> GATSBYCHAT: Your code is ${otp}, Do not share OTP with anyone`,
     PhoneNumber: phoneNumber,  // E.164 formatted phone number
   };
 

@@ -98,12 +98,13 @@ const loginWithPin = catchAsync(async (req, res) => {
 });
 
 const uploadUserDocument = catchAsync(async (req, res) => {
-  const file = req.file;
+  const files = req.files;
   let imageURI;
-  if (file) {
-    imageURI = await uploadFileS3(file);
-  }
-  const uploadUserDocument = await authService.uploadUserDocument(req, imageURI.Location);
+  if (files) {
+    imageURI = await uploadFileS3(files);
+  };
+  console.log('imageURI', imageURI);
+  const uploadUserDocument = await authService.uploadUserDocument(req, imageURI);
   res.status(httpStatus.OK).send({success: true, uploadUserDocument});
 });
 
