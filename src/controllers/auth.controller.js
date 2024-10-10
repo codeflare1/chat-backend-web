@@ -122,6 +122,10 @@ const verifyOtpByEmail = async (otp, email) => {
   await Otp.deleteMany({ email });
 };
 
+const fetchUser = async (req, res) => {
+  const user = await authService.fetchUser(req);
+  res.status(httpStatus.OK).send({success: true , user});
+};
 
 
 
@@ -141,4 +145,5 @@ module.exports = {
   verifyOtpByEmail,
   uploadUserDocument,
   loginWithPin,
+  fetchUser
 };

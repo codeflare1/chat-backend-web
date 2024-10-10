@@ -119,7 +119,18 @@ const uploadUserDocument = async (req, image) => {
   };
 
   return user;
-}
+};
+
+const fetchUser = async (req) => {
+  const userId = req.user._id;
+  const user = await User.findOne({_id: userId});
+  console.log('user', user);
+  if(!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  };
+
+  return user;
+};
 
 module.exports = {
   sendOtp,
@@ -130,5 +141,6 @@ module.exports = {
   verifyEmail,
   createPin,
   uploadUserDocument,
-  loginWithPin
+  loginWithPin,
+  fetchUser
 };

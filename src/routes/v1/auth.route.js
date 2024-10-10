@@ -17,5 +17,6 @@ router.post('/set-pin', validate(authValidation.createPin), authController.setPi
 router.post('/forgot-pin', auth(), validate(authValidation.forgotPin), authController.forgotPin);
 router.post('/loginWithPin', auth(), validate(authValidation.loginWithPin), authController.loginWithPin);
 router.put('/upload-document', auth(), upload.array('uploadDocument', 5), authController.uploadUserDocument);
+router.get('/fetchUser',auth(),  authController.fetchUser);
 
 module.exports = router;
