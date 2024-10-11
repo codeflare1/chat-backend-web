@@ -103,19 +103,28 @@ const loginWithPin = catchAsync(async (req, res) => {
 });
 
 const uploadUserDocument = catchAsync(async (req, res) => {
+  try {
+    console.log("************req.files --- ", req.files);
+    console.log("#############req.filee --- ", req.file);
 
-  console.log("************req.files --- ", req.files);
-  console.log("#############req.filee --- ", req.file);
+    const files = req.files;
+    console.log('files12', files);
+    let imageURI;
+    if (files && files?.length > 0) {
+      imageURI = await uploadFileS3(files);
+    };
+    console.log('imageURI', imageURI);
+    if (imageURI) {
+      const uploadUserDocument = await authService.uploadUserDocument(req, imageURI);
+      res.status(httpStatus.OK).send({ success: true, uploadUserDocument });
+    } else {
+      res.status(httpStatus.BAD_REQUEST).send({ success: false, message: `Uploaad failed` });
 
-  const files = req.files;
-  console.log('files12', files);
-  let imageURI;
-  if (files && files?.length > 0) {
-    imageURI = await uploadFileS3(files);
-  };
-  console.log('imageURI', imageURI);
-  const uploadUserDocument = await authService.uploadUserDocument(req, imageURI);
-  res.status(httpStatus.OK).send({ success: true, uploadUserDocument });
+    }
+  } catch (err) {
+    console.log("err ------ ", err);
+
+  }
 });
 
 const verifyOtpByEmail = async (otp, email) => {
