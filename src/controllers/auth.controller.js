@@ -98,6 +98,10 @@ const loginWithPin = catchAsync(async (req, res) => {
 });
 
 const uploadUserDocument = catchAsync(async (req, res) => {
+
+  console.log("************req.files --- ", req.files);
+  console.log("#############req.filee --- ", req.file);
+
   const files = req.files;
   console.log('files12', files);
   let imageURI;
