@@ -10,6 +10,8 @@ const register = catchAsync(async (req, res) => {
   if (file) {
     imageURI = await uploadFileS3(file);
   }
+  console.log("req.body --> ", req?.body);
+
   const user = await userService.createUser(req, imageURI?.Location);
   if (user) {
     res.status(httpStatus.OK).send({ success: true, user, message: 'profile created successfully' });
@@ -19,12 +21,14 @@ const register = catchAsync(async (req, res) => {
 });
 
 const login = catchAsync(async (req, res) => {
+  console.log("req.body --> ", req?.body);
   const user = await authService.login(req.body);
   const tokens = await tokenService.generateAuthTokens(user);
   res.status(httpStatus.OK).send({ success: true, user, tokens });
 });
 
 const sendOtp = catchAsync(async (req, res) => {
+  console.log("req.body --> ", req?.body);
   const response = await authService.sendOtp(req.body);
   res.status(httpStatus.OK).send({ success: true, response });
 });
@@ -40,6 +44,7 @@ const refreshTokens = catchAsync(async (req, res) => {
 });
 
 const forgotPin = catchAsync(async (req, res) => {
+  console.log("req.body --> ", req?.body);
   const response = await authService.sendOtp(req.body);
   res.status(httpStatus.OK).send({ success: true, response });
 });
@@ -86,15 +91,15 @@ const verifyEmail = catchAsync(async (req, res) => {
 const setPin = catchAsync(async (req, res) => {
   const user = await authService.createPin(req);
   let tokens;
-  if(req.body.method === 'register') {
+  if (req.body.method === 'register') {
     tokens = await tokenService.generateAuthTokens(user);
   }
-  res.status(httpStatus.OK).send({success: true, user, tokens});
+  res.status(httpStatus.OK).send({ success: true, user, tokens });
 });
 
 const loginWithPin = catchAsync(async (req, res) => {
   const user = await authService.loginWithPin(req);
-  res.status(httpStatus.OK).send({success: true , user});
+  res.status(httpStatus.OK).send({ success: true, user });
 });
 
 const uploadUserDocument = catchAsync(async (req, res) => {
@@ -105,12 +110,12 @@ const uploadUserDocument = catchAsync(async (req, res) => {
   const files = req.files;
   console.log('files12', files);
   let imageURI;
-  if (files) {
+  if (files && files?.length > 0) {
     imageURI = await uploadFileS3(files);
   };
   console.log('imageURI', imageURI);
   const uploadUserDocument = await authService.uploadUserDocument(req, imageURI);
-  res.status(httpStatus.OK).send({success: true, uploadUserDocument});
+  res.status(httpStatus.OK).send({ success: true, uploadUserDocument });
 });
 
 const verifyOtpByEmail = async (otp, email) => {
@@ -128,7 +133,7 @@ const verifyOtpByEmail = async (otp, email) => {
 
 const fetchUser = async (req, res) => {
   const user = await authService.fetchUser(req);
-  res.status(httpStatus.OK).send({success: true , user});
+  res.status(httpStatus.OK).send({ success: true, user });
 };
 
 
