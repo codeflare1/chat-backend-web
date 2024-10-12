@@ -5,6 +5,9 @@ const logger = require('../config/logger');
 const { Otp } = require('../models');
 const ApiError = require('../utils/ApiError');
 
+console.log("config.email.smtp ",config.email.smtp);
+
+
 const transport = nodemailer.createTransport(config.email.smtp);
 if (config.env !== 'test') {
   transport
