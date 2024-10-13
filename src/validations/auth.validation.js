@@ -16,8 +16,8 @@ const login = {
 
 const sendOtp = {
   body: Joi.object().keys({
-    phoneNumber: Joi.string().required(),
-    method: Joi.string().required(),
+    phoneNumber: Joi.string().optional(),
+    method: Joi.string().optional(),
   }),
 };
 
