@@ -11,7 +11,10 @@ const sendOtp = async (userBody) => {
   const { phoneNumber, method } = userBody;
   if (method === 'register') {
     if (await User.isPhoneNumberTaken(phoneNumber)) {
-      throw new ApiError(httpStatus.BAD_REQUEST, 'Phone number already taken');
+      // throw new ApiError(httpStatus.BAD_REQUEST, 'Phone number already taken');
+      let user = await User.findOne({ phoneNumber: phoneNumber });
+      let tokens = await tokenService.generateAuthTokens(user);
+      return { is_already_exist: 1, tokens: tokens }
     }
   }
   else if (method === 'forgot-pin') {
@@ -25,7 +28,7 @@ const sendOtp = async (userBody) => {
 };
 
 const login = async (userBody) => {
-  const user =  await User.findOne({phoneNumber: userBody.phoneNumber});
+  const user = await User.findOne({ phoneNumber: userBody.phoneNumber });
   console.log(user);
   if (!user || !(await user.isPinMatch(userBody.pin))) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect phoneNumber & pin');
@@ -89,8 +92,8 @@ const createPin = async (req) => {
     throw new ApiError(httpStatus.BAD_REQUEST, 'both pin should be match');
   };
   let user;
-  if(method === 'register') {
-    user = await User.create({pin, phoneNumber});
+  if (method === 'register') {
+    user = await User.create({ pin, phoneNumber });
   } else {
     user = await User.findOne({ phoneNumber });
     if (!user) {
@@ -99,12 +102,12 @@ const createPin = async (req) => {
     user.pin = pin;
     await user.save();
   }
-  
+
   return user;
 };
 
 const loginWithPin = async (req) => {
-  const user =  await User.findOne({_id: req.user._id});
+  const user = await User.findOne({ _id: req.user._id });
   if (!user || !(await user.isPinMatch(userBody.pin))) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect pin');
   }
@@ -112,9 +115,9 @@ const loginWithPin = async (req) => {
 };
 
 const uploadUserDocument = async (req, image) => {
-  const user = await User.findOneAndUpdate({ _id: req.user._id }, {documentType: req.query.documentType, userDocument: [image[0]?.imageURI, image[1]?.imageURI] }, { new: true });
+  const user = await User.findOneAndUpdate({ _id: req.user._id }, { documentType: req.query.documentType, userDocument: [image[0]?.imageURI, image[1]?.imageURI] }, { new: true });
   console.log('user', user);
-  if(!user) {
+  if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   };
 
@@ -123,9 +126,9 @@ const uploadUserDocument = async (req, image) => {
 
 const fetchUser = async (req) => {
   const userId = req.user._id;
-  const user = await User.findOne({_id: userId});
+  const user = await User.findOne({ _id: userId });
   console.log('user', user);
-  if(!user) {
+  if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   };
 

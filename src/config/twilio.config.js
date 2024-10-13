@@ -1,14 +1,9 @@
 const config = require('./config');
-// const client = require("twilio")(config.twilio.acountSid, config.twilio.authToken);
 const ApiError = require('../utils/ApiError');
 const { Otp } = require('../models');
 const httpStatus = require('http-status');
 
-
-const accountSid = 'AC8b7769ddb1a478b7978f171496c0ec21';
-const authToken = '08d4235d0e5e0aeba50dab03a0ffb8de';
-const client = require('twilio')(accountSid, authToken);
-
+const client = require('twilio')(config.twilio.accountSid, config.twilioauthToken);
 
 const sendSMS = async (to) => {
   try {
@@ -32,10 +27,12 @@ const sendSMS = async (to) => {
 
     // .then(verification => console.log(verification.sid));
     await Otp.create({ phoneNumber: to, otp, lastOtpSentTime: new Date });
-    return 'OTP sent successfully';
+    return { is_already_exist: 0, message: 'OTP sent successfully' };
   } catch (err) {
     console.log("sendSMS error==>", err);
-    throw new ApiError(httpStatus.BAD_REQUEST, err.message);
+    // throw new ApiError(httpStatus.BAD_REQUEST, err.message);
+    throw new ApiError(httpStatus.BAD_REQUEST, `Phone number not exist on twilio`);
+
   }
 };
 
