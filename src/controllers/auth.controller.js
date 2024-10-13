@@ -28,7 +28,7 @@ const login = catchAsync(async (req, res) => {
 });
 
 const sendOtp = catchAsync(async (req, res) => {
-  console.log("req.body --> ", req?.body);
+  console.log("sendOtp req.body --> ", req?.body);
   const response = await authService.sendOtp(req.body);
   res.status(httpStatus.OK).send({ success: true, response });
 });
