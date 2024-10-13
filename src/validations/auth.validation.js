@@ -47,7 +47,7 @@ const createPin = {
 
 const loginWithPin = {
   body: Joi.object().keys({
-    pin: Joi.string().required(),
+    pin: Joi.string().optional(),
   }),
 };
 
