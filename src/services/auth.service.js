@@ -15,16 +15,19 @@ const sendOtp = async (userBody) => {
       let user = await User.findOne({ phoneNumber: phoneNumber });
       let tokens = await tokenService.generateAuthTokens(user);
       return { is_already_exist: 1, tokens: tokens }
+    } else {
+      const notification = await sendSMS(phoneNumber);
+      return notification;
     }
   }
   else if (method === 'forgot-pin') {
     if (!await User.isPhoneNumberTaken(phoneNumber)) {
       throw new ApiError(httpStatus.BAD_REQUEST, 'Phone number does not exist');
+    } else {
+      const notification = await sendSMS(phoneNumber);
+      return notification;
     }
   };
-
-  const notification = await sendSMS(phoneNumber);
-  return notification;
 };
 
 const login = async (userBody) => {

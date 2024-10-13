@@ -3,7 +3,13 @@ const ApiError = require('../utils/ApiError');
 const { Otp } = require('../models');
 const httpStatus = require('http-status');
 
-const client = require('twilio')(config.twilio.accountSid, config.twilioauthToken);
+// const client = require('twilio')(config.twilio.accountSid, config.twilioauthToken);
+
+let accountSid = "AC8b7769ddb1a478b7978f171496c0ec21";
+let authToken = "5c35996649bea8fcb477eca392354814";
+let twilioSmsNumber = +17074750729;
+const client = require('twilio')(accountSid, authToken);
+
 
 const sendSMS = async (to) => {
   try {
