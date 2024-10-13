@@ -59,7 +59,6 @@ const verifyOtp = catchAsync(async (req, res) => {
     user = await User.findOne({ phoneNumber: number });
     tokens = await tokenService.generateAuthTokens(user);
   };
-
   res.status(httpStatus.OK).send({ success: true, data: 'OTP verified successfully', tokens });
 });
 
