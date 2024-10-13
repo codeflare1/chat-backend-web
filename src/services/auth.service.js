@@ -111,7 +111,7 @@ const createPin = async (req) => {
 
 const loginWithPin = async (req) => {
   const user = await User.findOne({ _id: req.user._id });
-  if (!user || !(await user.isPinMatch(userBody.pin))) {
+  if (!user || !(await user.isPinMatch(req.body.pin))) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect pin');
   }
   return user;
