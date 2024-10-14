@@ -5,6 +5,9 @@ const logger = require('../config/logger');
 const { Otp } = require('../models');
 const ApiError = require('../utils/ApiError');
 
+console.log("config.email.smtp ",config.email.smtp);
+
+
 const transport = nodemailer.createTransport(config.email.smtp);
 if (config.env !== 'test') {
   transport
@@ -12,6 +15,7 @@ if (config.env !== 'test') {
     .then(() => logger.info('Connected to email server'))
     .catch(() => logger.warn('Unable to connect to email server. Make sure you have configured the SMTP options in .env'));
 }
+
 
 const sendEmail = async (to, subject, text) => {
   const msg = { from: config.email.from, to, subject, text };

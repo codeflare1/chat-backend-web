@@ -28,7 +28,7 @@ const login = catchAsync(async (req, res) => {
 });
 
 const sendOtp = catchAsync(async (req, res) => {
-  console.log("sendOtp req.body --> ", req?.body);
+  console.log("req.body --> ", req?.body);
   const response = await authService.sendOtp(req.body);
   res.status(httpStatus.OK).send({ success: true, response });
 });
@@ -59,6 +59,7 @@ const verifyOtp = catchAsync(async (req, res) => {
     user = await User.findOne({ phoneNumber: number });
     tokens = await tokenService.generateAuthTokens(user);
   };
+
   res.status(httpStatus.OK).send({ success: true, data: 'OTP verified successfully', tokens });
 });
 

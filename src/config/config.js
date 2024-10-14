@@ -53,10 +53,7 @@ module.exports = {
   twilio: {
     accountSid: envVars.TWILIO_ACCOUNT_SID,
     authToken: envVars.TWILIO_AUTH_TOKEN,
-    twilioSmsNumber: envVars.TWILIO_SMS_NUMBER ?? +17074750729,
-    // accountSid: "AC8b7769ddb1a478b7978f171496c0ec21",
-    // authToken: "5c35996649bea8fcb477eca392354814",
-    // twilioSmsNumber: +17074750729,
+    twilioSmsNumber: envVars.TWILIO_SMS_NUMBER,
   },
   email: {
     smtp: {

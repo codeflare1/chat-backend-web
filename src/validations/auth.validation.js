@@ -16,8 +16,8 @@ const login = {
 
 const sendOtp = {
   body: Joi.object().keys({
-    phoneNumber: Joi.string().optional(),
-    method: Joi.string().optional(),
+    phoneNumber: Joi.string().required(),
+    method: Joi.string().required(),
   }),
 };
 
@@ -47,7 +47,7 @@ const createPin = {
 
 const loginWithPin = {
   body: Joi.object().keys({
-    pin: Joi.string().optional(),
+    pin: Joi.string().required(),
   }),
 };
 
