@@ -36,6 +36,16 @@ const userSchema = mongoose.Schema(
       type: [String],
       required: false,
     },
+    otp:{
+      type:String,
+      trim:true,
+    },
+    lastOtpSentTime: {
+      type: Date, 
+    },
+    otpExpiresAt: {
+      type: Date,  
+    },
     documentType: {
         type: String,
         required: false,

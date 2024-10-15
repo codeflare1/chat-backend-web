@@ -20,7 +20,7 @@ const sendOtp = async (userBody) => {
     }
   };
 
-  const notification = await sendSMS(phoneNumber);
+  const notification = await sendSMS(phoneNumber,method);
   return notification;
 };
 
