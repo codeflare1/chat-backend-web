@@ -62,7 +62,7 @@ const forgotPin = catchAsync(async (req, res) => {
 });
 
 const verifyOtp = catchAsync(async (req, res) => {
-  const { otp, phoneNumber, method,otpId } = req.body;
+  const { otp, phoneNumber, method,otpId } = req.query;
   const number = `+${phoneNumber}`;
   // await emailService.verifyOtp(otp, number);
 await verifyOTP2(otpId,otp)

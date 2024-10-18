@@ -1,4 +1,5 @@
 const Joi = require('joi');
+const { query } = require('../config/logger');
 
 const register = {
   body: Joi.object().keys({
@@ -29,7 +30,7 @@ const forgotPin = {
 };
 
 const verifyOtp = {
-  body: Joi.object().keys({
+  query: Joi.object().keys({
     phoneNumber: Joi.string().required(),
     otp: Joi.string().required(),
     method: Joi.string().optional(),
