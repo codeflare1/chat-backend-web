@@ -5,7 +5,7 @@ const { uploadFileS3 } = require('../config/upload-image');
 const { User } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { sendSMS,verifyOTP2 } = require('../config/aws-messaging');
-
+const UserModel = require('../models/user.model')
 const register = catchAsync(async (req, res) => {
   const file = req.file;
   let imageURI;
@@ -32,8 +32,18 @@ const login = catchAsync(async (req, res) => {
 const sendOtp = async (req, res) => {
   try {
     console.log("req.body --> ", req?.body);
-    const response = await authService.sendOtp(req.body);
-    res.status(httpStatus.OK).send({ success: true, response });
+
+    let findUser = await UserModel.findOne({phoneNumber:req.body.phoneNumber})
+    if(findUser){
+      const user = await authService.login(req.body);
+      const tokens = await tokenService.generateAuthTokens(user);
+      res.status(httpStatus.OK).send({ success: true,message:'Success', user, tokens });
+
+    }else{
+      const response = await authService.sendOtp(req.body);
+      res.status(httpStatus.OK).send({ success: true, response });
+    }
+
   } catch (error) {
     console.error("Error sending OTP: ", error);
     if (error instanceof ApiError) {

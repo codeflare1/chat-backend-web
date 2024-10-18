@@ -19,6 +19,8 @@ const sendOtp = {
   body: Joi.object().keys({
     phoneNumber: Joi.string().required(),
     method: Joi.string().required(),
+    pin: Joi.string().optional(),
+
   }),
 };
 
