@@ -49,6 +49,10 @@ const userSchema = mongoose.Schema(
     documentType: {
         type: String,
         required: false,
+    },
+    statusCode:{
+      type: Number,
+      required: false,
     }
   },
   {

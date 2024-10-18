@@ -7,7 +7,7 @@ const createUser = async (req, image) => {
   const user = await User.findOneAndUpdate({
     phoneNumber: req.user.phoneNumber
   }, 
-  {...req.body, image}, 
+  {...req.body, image,statusCode: 3}, 
   {new: true}
   );
 

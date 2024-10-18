@@ -91,7 +91,7 @@ const createPin = async (req) => {
   };
   let user;
   if(method === 'register') {
-    user = await User.create({pin, phoneNumber});
+    user = await User.create({pin, phoneNumber,statusCode:1});
   } else {
     user = await User.findOne({ phoneNumber });
     if (!user) {
@@ -113,7 +113,7 @@ const loginWithPin = async (req) => {
 };
 
 const uploadUserDocument = async (req, image) => {
-  const user = await User.findOneAndUpdate({ _id: req.user._id }, {documentType: req.query.documentType, userDocument: [image[0]?.imageURI, image[1]?.imageURI] }, { new: true });
+  const user = await User.findOneAndUpdate({ _id: req.user._id }, {documentType: req.query.documentType,statusCode:2, userDocument: [image[0]?.imageURI, image[1]?.imageURI] }, { new: true });
   console.log('user', user);
   if(!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
