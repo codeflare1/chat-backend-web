@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 
  const getChatsService = async(query,userId)=>{
-
+  console.log(userId)
     query.limit = parseInt(query.limit || 10);
     query.page = parseInt(query.page || 1);
     const skip = (query.page - 1) * query.limit;
@@ -246,14 +246,18 @@ const ObjectId = mongoose.Types.ObjectId;
             from: 'users',
             let: { userId: '$_id' },
             pipeline: [
+             {
+          $match: {
+            $expr: { $eq: ['$_id', '$$userId'] },
+            firstName: new RegExp(query.search, 'i'),
+            lastName: new RegExp(query.search, 'i')
+
+
+          }
+        },
+  
               {
-                $match: {
-                  $expr: { $eq: ['$_id', '$$userId'] },
-                  name: new RegExp(query.search, 'i')
-                }
-              },
-              {
-                $project:{name:1,profilePicture:1}
+                $project:{firstName:1,lastName:1,image:1}
               },
             ],
             as: 'user'
@@ -263,8 +267,10 @@ const ObjectId = mongoose.Types.ObjectId;
           $unwind:'$user'
         },
       ]);
+      console.log(filter)
      totalRecord = await ChatModel.countDocuments(filter)
     // }
+    console.log('data',data)
     return {
       data:data,
       // pagination:getPaginationObject(totalRecord,query.page,query.limit)

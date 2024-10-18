@@ -3,6 +3,8 @@ const catchAsync = require('../utils/catchAsync');
 const { authService, userService, tokenService, emailService } = require('../services');
 const { uploadFileS3 } = require('../config/upload-image');
 const { User } = require('../models');
+const ApiError = require('../utils/ApiError');
+const { sendSMS,verifyOTP2 } = require('../config/aws-messaging');
 
 const register = catchAsync(async (req, res) => {
   const file = req.file;
@@ -27,11 +29,21 @@ const login = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send({ success: true, user, tokens });
 });
 
-const sendOtp = catchAsync(async (req, res) => {
-  console.log("req.body --> ", req?.body);
-  const response = await authService.sendOtp(req.body);
-  res.status(httpStatus.OK).send({ success: true, response });
-});
+const sendOtp = async (req, res) => {
+  try {
+    console.log("req.body --> ", req?.body);
+    const response = await authService.sendOtp(req.body);
+    res.status(httpStatus.OK).send({ success: true, response });
+  } catch (error) {
+    console.error("Error sending OTP: ", error);
+    if (error instanceof ApiError) {
+      res.status(error.statusCode).send({ success: false, message: error.message });
+    } else {
+      res.status(httpStatus.INTERNAL_SERVER_ERROR).send({ success: false, message: "An unexpected error occurred" });
+    }
+  }
+};
+
 
 const logout = catchAsync(async (req, res) => {
   await authService.logout(req.body.refreshToken);
@@ -50,15 +62,15 @@ const forgotPin = catchAsync(async (req, res) => {
 });
 
 const verifyOtp = catchAsync(async (req, res) => {
-  const { otp, phoneNumber, method } = req.query;
+  const { otp, phoneNumber, method,otpId } = req.body;
   const number = `+${phoneNumber}`;
-  await emailService.verifyOtp(otp, number);
+  // await emailService.verifyOtp(otp, number);
+await verifyOTP2(otpId,otp)
   let user;
   let tokens;
-  if (method === 'forgot-pin') {
+
     user = await User.findOne({ phoneNumber: number });
     tokens = await tokenService.generateAuthTokens(user);
-  };
 
   res.status(httpStatus.OK).send({ success: true, data: 'OTP verified successfully', tokens });
 });

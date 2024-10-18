@@ -29,10 +29,11 @@ const forgotPin = {
 };
 
 const verifyOtp = {
-  query: Joi.object().keys({
+  body: Joi.object().keys({
     phoneNumber: Joi.string().required(),
     otp: Joi.string().required(),
-    method: Joi.string().required(),
+    method: Joi.string().optional(),
+    otpId:Joi.string().required(),
   }),
 };
 

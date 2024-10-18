@@ -4,8 +4,9 @@ const Token = require('../models/token.model');
 const ApiError = require('../utils/ApiError');
 const { tokenTypes } = require('../config/tokens');
 const { User } = require('../models');
-const { sendSMS } = require('../config/twilio.config');
+// const { sendSMS } = require('../config/twilio.config');
 const userService = require('./user.service');
+const { sendSMS,verifyOTP } = require('../config/aws-messaging');
 
 const sendOtp = async (userBody) => {
   const { phoneNumber, method } = userBody;

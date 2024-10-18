@@ -69,6 +69,7 @@ module.exports = function (io) {
       try {
         const chats = await getChatsService({ limit, page, type }, senderId);
         socket.emit('getChats', chats);
+        console.log(chats)
       } catch (error) {
         console.error('Error on sendMessage:', error);
       }

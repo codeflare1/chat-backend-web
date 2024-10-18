@@ -10,6 +10,16 @@ const roomsSchema =  new mongoose.Schema({
     type:Boolean,
     required:false,
   },
+  callType: {
+    type: String,
+    enum: ['audio', 'video'], // Define if it's a video or audio call
+    required: false,
+  },
+  callStatus: {
+    type: String,
+    enum: ['ongoing', 'ended', 'missed'],
+    default: 'ongoing',
+  },
 },{
   timestamps:true
 });
