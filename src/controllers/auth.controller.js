@@ -73,16 +73,18 @@ const forgotPin = catchAsync(async (req, res) => {
 
 const verifyOtp = catchAsync(async (req, res) => {
   const { otp, phoneNumber, method,otpId } = req.query;
-  const number = `+${phoneNumber}`;
+  
+  let number = `+${phoneNumber}`.replace(/\s+/g, '');
   //  await emailService.verifyOtp(otp, number);
 await verifyOTP2(otpId,otp)
   let user;
   let tokens;
+console.log(number)
+    user = await User.findOne({ phoneNumber: number });
+    console.log(user)
+    tokens = await tokenService.generateAuthTokens(user);
 
-    // user = await User.findOne({ phoneNumber: number });
-    // tokens = await tokenService.generateAuthTokens(user);
-
-  res.status(httpStatus.OK).send({ success: true, message: 'OTP verified successfully' });
+  res.status(httpStatus.OK).send({ success: true, message: 'OTP verified successfully',tokens});
 });
 
 const resetPassword = catchAsync(async (req, res) => {
@@ -115,6 +117,8 @@ const setPin = catchAsync(async (req, res) => {
   let tokens;
   if (req.body.method === 'register') {
     tokens = await tokenService.generateAuthTokens(user);
+  }else{
+    tokens    = await tokenService.generateResetPasswordToken(user)
   }
   res.status(httpStatus.OK).send({ success: true, user, tokens });
 });

@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const moment = require('moment');
 const httpStatus = require('http-status');
 const config = require('../config/config');
-const { Token } = require('../models');
+const { Token,User } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { tokenTypes } = require('../config/tokens');
 const { userTypes } = require('../constant/constant');
@@ -57,13 +57,13 @@ const generateAuthTokens = async (user, userType) => {
   };
 };
 
-const generateResetPasswordToken = async (userBody) => {
-  const user = await checkUserByEmail(userBody.email);
-  if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'No users found with this email');
-  }
+const generateResetPasswordToken = async (user) => {
+  // const user = await checkUserByPhoneNumber(user);
+  // if (!user) {
+  //   throw new ApiError(httpStatus.NOT_FOUND, 'No users found with this email');
+  // }
   const expires = moment().add(config.jwt.resetPasswordExpirationMinutes, 'minutes');
-  const resetPasswordToken = generateToken(user.id, userBody.userType, expires, tokenTypes.RESET_PASSWORD);
+  const resetPasswordToken = generateToken(user.id, null, expires, tokenTypes.RESET_PASSWORD);
   await saveToken(resetPasswordToken, user.id, expires, tokenTypes.RESET_PASSWORD);
   return resetPasswordToken;
 };
@@ -77,6 +77,9 @@ const generateVerifyEmailToken = async (user) => {
 
 const checkUserByEmail = async (email, role) => {
   return userService.getUserByEmail(email);
+};
+const checkUserByPhoneNumber = async (phoneNumber) => {
+  return userService.getUserByPhoneNumber(phoneNumber);
 };
 
 module.exports = {
