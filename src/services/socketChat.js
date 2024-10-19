@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
 const RoomModel = require('../models/roomModel');
 const ChatModel = require('../models/chatModel');
+const UserModel = require('../models/user.model');
 const ObjectId = mongoose.Types.ObjectId;
-const {getChatsService} = require('./chatHandler')
+const {getChatsService,getUsersService} = require('./chatHandler')
 const generateRoomID = (room) => {
   return room.join('_');
 };
@@ -86,7 +87,16 @@ module.exports = function (io) {
         console.error('Error on markAsSeen:', error);
       }
     });
+    socket.on('getAllUser', async ({ limit = 10, page = 1, search = '' }) => {
+      try {
+        const chats = await getUsersService({ limit, page,search });
+        socket.emit('getAllUserResponse', chats);
+        console.log(chats)
 
+      } catch (error) {
+        console.error('Error on getAllUser:', error);
+      }
+    });
     socket.on('disconnect', async () => {
       console.log('Client disconnected', socket.id);
     });

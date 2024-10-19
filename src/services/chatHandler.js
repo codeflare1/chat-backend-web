@@ -1,4 +1,6 @@
 const ChatModel = require('../models/chatModel');
+const UserModel = require('../models/user.model');
+
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 
@@ -276,5 +278,48 @@ const ObjectId = mongoose.Types.ObjectId;
       // pagination:getPaginationObject(totalRecord,query.page,query.limit)
     };
   };
+  const getUsersService = async (query, userId) => {
+    try {
+      console.log("query", query);
+      // Convert search keyword to a case-insensitive regular expression
+      const searchRegex = new RegExp(query.search, 'i');
+      let limit = parseInt(query.limit || 10);
+      let page = parseInt(query.page || 1);
+      const skip = (page - 1) * limit;
+  
+      // Find users where the phoneNumber, firstName, or lastName matches the search keyword
+      const filter = {
+        $or: [
+          { phoneNumber: { $regex: searchRegex } },
+          { firstName: { $regex: searchRegex } },
+          { lastName: { $regex: searchRegex } }
+        ]
+      };
+  
+      // Pagination options
+      const options = {
+        limit: limit,
+        skip: skip
+      };
+      console.log("filter",filter)
+      console.log("options",options)
 
-  module.exports = { getChatsService };
+      // Query the database with the search and pagination
+      const users = await UserModel.find(filter, {firstName:1,lastName:1,image:1,phoneNumber:1},options);
+      console.log('users',users)
+      const total = await UserModel.countDocuments(filter); // Total matching users for pagination
+  
+      // Return the filtered and paginated users
+      return {
+        users,
+        total,
+        page,
+        limit
+      };
+    } catch (error) {
+      console.error('Error on getAllUser:', error);
+      throw error;
+    }
+  };
+  
+  module.exports = { getChatsService,getUsersService};
