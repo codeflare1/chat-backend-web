@@ -80,12 +80,12 @@ const verifyOtp = catchAsync(async (req, res) => {
 await verifyOTP2(otpId,otp)
   let user;
   let tokens;
-console.log(number)
-    user = await User.findOne({ phoneNumber: number });
-    console.log(user)
-    tokens = await tokenService.generateAuthTokens(user);
+// console.log(number)
+//     user = await User.findOne({ phoneNumber: number });
+//     console.log(user)
+//     tokens = await tokenService.generateAuthTokens(user);
 
-  res.status(httpStatus.OK).send({ success: true, message: 'OTP verified successfully',tokens});
+  res.status(httpStatus.OK).send({ success: true, message: 'OTP verified successfully'});
 });
 
 const resetPassword = catchAsync(async (req, res) => {
