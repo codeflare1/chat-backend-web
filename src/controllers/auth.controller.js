@@ -38,7 +38,7 @@ const sendOtp = async (req, res) => {
       const user = await authService.login(req.body);
       // const response = await authService.sendOtp(req.body);
       const tokens = await tokenService.generateAuthTokens(user);
-      res.status(httpStatus.OK).send({ success: true,message:'Success', user, tokens,response });
+      res.status(httpStatus.OK).send({ success: true,message:'Success', user, tokens });
 
     }else{
       const response = await authService.sendOtp(req.body);
