@@ -19,6 +19,8 @@ router.post('/loginWithPin', auth(), validate(authValidation.loginWithPin), auth
 router.put('/upload-document', auth(), upload.array('uploadDocument', 5), authController.uploadUserDocument);
 router.get('/fetchUser',auth(),  authController.fetchUser);
 router.get('/fetchOtherUser/:id',auth(),  authController.fetchOtherUser);
+router.post('/uploadFiles', auth(), upload.array('uploadDocument', 1), authController.uploadFiles);
+
 
 
 module.exports = router;

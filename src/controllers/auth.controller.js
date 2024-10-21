@@ -178,6 +178,25 @@ const fetchOtherUser = async (req, res) => {
   res.status(httpStatus.OK).send({ success: true, user });
 };
 
+const uploadFiles = catchAsync(async (req, res) => {
+  try {
+    const files = req.files;
+    console.log('files12', files);
+    let imageURI;
+    if (files && files?.length > 0) {
+      imageURI = await uploadFileS3(files);
+    };
+    console.log('imageURI', imageURI);
+    if (imageURI) {
+      res.status(httpStatus.OK).send({ success: true, imageURI });
+    } else {
+      res.status(httpStatus.BAD_REQUEST).send({ success: false, message: `Uploaad failed` });
+    }
+  } catch (err) {
+    console.log("err ------ ", err);
+
+  }
+});
 
 
 module.exports = {
@@ -197,5 +216,6 @@ module.exports = {
   uploadUserDocument,
   loginWithPin,
   fetchUser,
-  fetchOtherUser
+  fetchOtherUser,
+  uploadFiles
 };
