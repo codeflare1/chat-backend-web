@@ -7,6 +7,7 @@ const http = require('http');
 const socketIo = require('socket.io');
 const socketHandler = require('../src/services/socketChat'); 
 
+
 // Create HTTP server using Express app
 const server = http.createServer(app);
 console.log(server)
@@ -27,6 +28,16 @@ mongoose.connect(config.mongoose.url, config.mongoose.options).then(() => {
     logger.info(`Listening to port ${config.port}`);
   });
 });
+
+
+
+
+
+
+
+
+
+
 
 // Graceful exit handlers
 const exitHandler = () => {

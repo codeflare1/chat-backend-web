@@ -132,7 +132,16 @@ const fetchUser = async (req) => {
 
   return user;
 };
+const fetchOtherUser = async (req) => {
+  const userId = req.params.id;
+  const user = await User.findOne({_id: userId});
+  console.log('user', user);
+  if(!user) { 
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  };
 
+  return user;
+};
 module.exports = {
   sendOtp,
   login,
@@ -143,5 +152,6 @@ module.exports = {
   createPin,
   uploadUserDocument,
   loginWithPin,
-  fetchUser
+  fetchUser,
+  fetchOtherUser
 };

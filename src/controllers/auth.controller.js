@@ -173,6 +173,11 @@ const fetchUser = async (req, res) => {
   res.status(httpStatus.OK).send({ success: true, user });
 };
 
+const fetchOtherUser = async (req, res) => {
+  const user = await authService.fetchOtherUser(req);
+  res.status(httpStatus.OK).send({ success: true, user });
+};
+
 
 
 module.exports = {
@@ -191,5 +196,6 @@ module.exports = {
   verifyOtpByEmail,
   uploadUserDocument,
   loginWithPin,
-  fetchUser
+  fetchUser,
+  fetchOtherUser
 };
