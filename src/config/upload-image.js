@@ -28,6 +28,15 @@ function uploadFileS3(files) {
       return new Promise(async (resolve, reject) => {
         try {
           let fileType = 'other';
+          if (file.mimetype.startsWith('image/')) {
+            fileType = 'image';
+          } else if (file.mimetype.startsWith('video/')) {
+            fileType = 'video';
+          } else if (file.mimetype.startsWith('audio/')) {
+            fileType = 'audio';
+          } else if (file.mimetype === 'application/pdf') {
+            fileType = 'pdf';
+          }
           const imageResponse = await uploadFile(file, fileType);
           console.log('Uploaded image:', imageResponse);
           await unlinkFile(file.path);
