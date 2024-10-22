@@ -20,6 +20,7 @@ router.put('/upload-document', auth(), upload.array('uploadDocument', 5), authCo
 router.get('/fetchUser',auth(),  authController.fetchUser);
 router.get('/fetchOtherUser/:id',auth(),  authController.fetchOtherUser);
 router.post('/uploadFiles', auth(), upload.array('uploadDocument', 1), authController.uploadFiles);
+router.get('/getAllUsers',auth(), authController.getAllUsers);
 
 
 

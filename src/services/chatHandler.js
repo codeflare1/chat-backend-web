@@ -236,6 +236,7 @@ const ObjectId = mongoose.Types.ObjectId;
                 }
             },
               lastMessage: { $first: "$$ROOT.message" },
+              fileType: { $first: "$$ROOT.fileType" },
               createdAt: { $first: "$$ROOT.createdAt" },
   
           }

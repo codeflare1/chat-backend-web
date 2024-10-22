@@ -47,15 +47,15 @@ module.exports = function (io) {
         console.error('Error on join:', error);
       }
     });
-    socket.on('sendMessage', async ({ senderId, receiverId, message }) => {
+    socket.on('sendMessage', async ({ senderId, receiverId, message,fileType }) => {
       try {
-        console.log('lof for send message ', { senderId, receiverId, message });
+        console.log('lof for send message ', { senderId, receiverId, message,fileType });
         let room = await RoomModel.findOne({
           participants: { $all: [senderId, receiverId] },
         });
         console.log(' room.roomId', room.roomId);
-        const msg = await ChatModel.create({ roomId: room.roomId, senderId, receiverId, message });
-        io.to(room.roomId).emit('receiveMessage', { senderId, message, createdAt: msg.createdAt });
+        const msg = await ChatModel.create({ roomId: room.roomId, senderId, receiverId, message,fileType });
+        io.to(room.roomId).emit('receiveMessage', { senderId, message, createdAt: msg.createdAt,fileType });
         const senderChats = await getChatsService({ limit: 10, page: 1 }, senderId);
         const receiverChats = await getChatsService({ limit: 10, page: 1 }, receiverId);
 

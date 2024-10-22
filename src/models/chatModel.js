@@ -21,6 +21,11 @@ const chatsSchema = new mongoose.Schema({
     type:String,
     required:false,
   },
+  fileType:{
+    type:String,
+    required:false,
+    default:null
+  },
   isSeen:{
     type:Boolean,
     required:false,

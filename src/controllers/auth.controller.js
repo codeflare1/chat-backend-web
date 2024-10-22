@@ -199,6 +199,52 @@ const uploadFiles = catchAsync(async (req, res) => {
 });
 
 
+const getAllUsers = async (req, res) => {
+  try {
+    console.log("query", req.query);
+    let query = req.query
+    // Convert search keyword to a case-insensitive regular expression
+    const searchRegex = new RegExp(query.search, 'i');
+    let limit = parseInt(query.limit || 10);
+    let page = parseInt(query.page || 1);
+    const skip = (page - 1) * limit;
+
+    // Find users where the phoneNumber, firstName, or lastName matches the search keyword
+    const filter = {
+      $or: [
+        { phoneNumber: { $regex: searchRegex } },
+        { firstName: { $regex: searchRegex } },
+        { lastName: { $regex: searchRegex } }
+      ]
+    };
+
+    // Pagination options
+    const options = {
+      limit: limit,
+      skip: skip
+    };
+    console.log("filter",filter)
+    console.log("options",options)
+
+    // Query the database with the search and pagination
+    const users = await UserModel.find(filter, {firstName:1,lastName:1,image:1,phoneNumber:1},options);
+    console.log('users',users)
+    const total = await UserModel.countDocuments(filter); // Total matching users for pagination
+
+    // Return the filtered and paginated users
+   let obj =  {
+      users,
+      total,
+      page,
+      limit
+    };
+    return res.send({status:true,data:obj})
+  } catch (error) {
+    console.error('Error on getAllUser:', error);
+    throw error;
+  }
+};
+
 module.exports = {
   register,
   login,
@@ -217,5 +263,6 @@ module.exports = {
   loginWithPin,
   fetchUser,
   fetchOtherUser,
-  uploadFiles
+  uploadFiles,
+  getAllUsers
 };
