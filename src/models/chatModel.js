@@ -12,6 +12,7 @@ const chatsSchema = new mongoose.Schema({
     required:false,
     ref : 'users'
   },
+  groupId: { type: mongoose.Schema.Types.ObjectId, ref: 'Group' }, 
   message:{
     type:String,
     required:true,

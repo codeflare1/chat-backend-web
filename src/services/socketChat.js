@@ -55,7 +55,7 @@ module.exports = function (io) {
         });
         console.log(' room.roomId', room.roomId);
         const msg = await ChatModel.create({ roomId: room.roomId, senderId, receiverId, message });
-        io.to(room.roomId).emit('receiveMessage', { senderId, message, timestamp: msg.createdAt });
+        io.to(room.roomId).emit('receiveMessage', { senderId, message, createdAt: msg.createdAt });
         const senderChats = await getChatsService({ limit: 10, page: 1 }, senderId);
         const receiverChats = await getChatsService({ limit: 10, page: 1 }, receiverId);
 
