@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const RoomModel = require('../models/roomModel');
 const ChatModel = require('../models/chatModel');
 const UserModel = require('../models/user.model');
-const GroupModel = require('../models/groupModel');
 const ObjectId = mongoose.Types.ObjectId;
 const {getChatsService,getUsersService} = require('./chatHandler')
 const generateRoomID = (room) => {
@@ -41,7 +40,7 @@ module.exports = function (io) {
           .sort({ createdAt: -1 })
           .limit(10);
         socket.emit('messageHistory', messages.reverse());
-        const chats = await getChatsService({ limit: 10, page: 1 }, senderId);
+        const chats = await getChatsService({ limit: 1000, page: 1 }, senderId);
         console.log('chats', chats);
         socket.emit('getChats', chats);
       } catch (error) {
@@ -57,8 +56,8 @@ module.exports = function (io) {
         console.log(' room.roomId', room.roomId);
         const msg = await ChatModel.create({ roomId: room.roomId, senderId, receiverId, message,fileType });
         io.to(room.roomId).emit('receiveMessage', { senderId, message, createdAt: msg.createdAt,fileType });
-        const senderChats = await getChatsService({ limit: 10, page: 1 }, senderId);
-        const receiverChats = await getChatsService({ limit: 10, page: 1 }, receiverId);
+        const senderChats = await getChatsService({ limit: 1000, page: 1 }, senderId);
+        const receiverChats = await getChatsService({ limit: 1000, page: 1 }, receiverId);
 
         console.log('chats-------0', senderChats, receiverChats);
         io.to(senderId).emit('getChats', senderChats);
@@ -67,7 +66,7 @@ module.exports = function (io) {
         console.error('Error on sendMessage:', error);
       }
     });
-    socket.on('getAllChats', async ({ senderId, limit = 10000, page = 1, type }) => {
+    socket.on('getAllChats', async ({ senderId, limit = 1000, page = 1, type }) => {
       try {
         const chats = await getChatsService({ limit, page, type }, senderId);
         socket.emit('getChats', chats);
@@ -88,7 +87,7 @@ module.exports = function (io) {
         console.error('Error on markAsSeen:', error);
       }
     });
-    socket.on('getAllUser', async ({ limit = 1000, page = 1, search = '' }) => {
+    socket.on('getAllUser', async ({ limit = 100, page = 1, search = '' }) => {
       try {
         const chats = await getUsersService({ limit, page,search });
         socket.emit('getAllUserResponse', chats);
@@ -98,59 +97,6 @@ module.exports = function (io) {
         console.error('Error on getAllUser:', error);
       }
     });
-    // Add this to the existing socket event handling code
-socket.on('createGroup', async ({ adminId, groupName, memberIds }) => {
-  try {
-    // Generate a unique group ID
-    const groupId = generateRoomID([adminId, groupName]);
-    
-    // Create the group in the database
-    const group = await GroupModel.create({
-      groupId,
-      groupName,
-      adminId,
-      members: memberIds.map(userId => ({ userId, status: 'pending' })),
-    });
-
-    // Notify each member about the group invitation
-    memberIds.forEach(memberId => {
-      io.to(memberId).emit('groupInvitation', {
-        groupId,
-        groupName,
-        message: `You have been invited to join the group: ${groupName}. Please accept or reject the invitation.`,
-      });
-    });
-
-    console.log(`Group ${groupName} created with ID ${groupId} by admin ${adminId}`);
-  } catch (error) {
-    console.error('Error creating group:', error);
-  }
-});
-
-// Handle group invitation response
-socket.on('respondToGroupInvitation', async ({ userId, groupId, response }) => {
-  try {
-    // Update the member's status in the group
-    const group = await GroupModel.findOneAndUpdate(
-      { groupId, 'members.userId': userId },
-      { $set: { 'members.$.status': response } },
-      { new: true }
-    );
-
-    if (response === 'accepted') {
-      // Notify the group members about the acceptance
-      io.to(groupId).emit('groupUpdate', { userId, message: 'User has accepted the invitation.' });
-
-      
-    } else {
-      // Notify the admin about the rejection
-      io.to(group.adminId).emit('groupUpdate', { userId, message: 'User has rejected the invitation.' });
-    }
-  } catch (error) {
-    console.error('Error responding to group invitation:', error);
-  }
-});
-
     socket.on('disconnect', async () => {
       console.log('Client disconnected', socket.id);
     });
