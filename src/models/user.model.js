@@ -32,6 +32,19 @@ const userSchema = mongoose.Schema(
       required: false,
       trim: true,
     },
+    about: {
+      type: String,
+      required: false,
+      trim: true,
+      default:null
+    },
+    userName: {
+      type: String,
+      required: false,
+      trim: true,
+      default:null,
+      unique:true
+    },
     userDocument: {
       type: [String],
       required: false,

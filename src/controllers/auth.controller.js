@@ -244,6 +244,46 @@ const getAllUsers = async (req, res) => {
     throw error;
   }
 };
+const updateUserProfile = async (req, res) => {
+  const userId = req.user._id;
+  const { firstName, lastName, profileImage, about, userName } = req.body;
+
+  // Check if the userName is provided and is unique
+  if (userName) {
+    const existingUser = await UserModel.findOne({ userName, _id: { $ne: userId } });
+    if (existingUser) {
+      return res.status(httpStatus.BAD_REQUEST).send({ message: 'Username is already taken' });
+    }
+  }
+
+  const file = req.file;
+  let imageURI;
+  if (file) {
+    imageURI = await uploadFileS3(file);
+  }
+
+  // Dynamically build the update object
+  const updateData = {};
+  if (firstName !== undefined) updateData.firstName = firstName;
+  if (lastName !== undefined) updateData.lastName = lastName;
+  if (imageURI?.Location) updateData.image = imageURI.Location;
+  if (about !== undefined) updateData.about = about;
+  if (userName !== undefined) updateData.userName = userName;
+
+  const user = await UserModel.findByIdAndUpdate(
+    userId,
+    { $set: updateData },
+    { new: true }
+  );
+
+  if (!user) {
+    return res.status(httpStatus.NOT_FOUND).send({ message: 'User not found' });
+  }
+
+  res.status(httpStatus.OK).send(user);
+};
+
+
 
 module.exports = {
   register,
@@ -264,5 +304,6 @@ module.exports = {
   fetchUser,
   fetchOtherUser,
   uploadFiles,
-  getAllUsers
+  getAllUsers,
+  updateUserProfile
 };
