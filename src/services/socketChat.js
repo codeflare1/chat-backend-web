@@ -38,7 +38,7 @@ module.exports = function (io) {
         // Fetch previous messages in the room
         const messages = await ChatModel.find({ roomId: room.roomId, isBlockedMessage: false })
           .sort({ createdAt: -1 })
-          .limit(10);
+          // .limit(10);
         socket.emit('messageHistory', messages.reverse());
         const chats = await getChatsService({ limit: 1000, page: 1 }, senderId);
         console.log('chats', chats);
