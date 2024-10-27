@@ -18,56 +18,102 @@ module.exports = function (io) {
       console.log(`User ${senderId} has connected and joined their room.`);
     });
     // User-to-user chat
-    socket.on('joinChat', async ({ senderId, receiverId }) => {
+    socket.on('joinChat', async ({ senderId, chatId, type }) => {
       try {
-        console.log('user joinChat', { senderId, receiverId });
-        const roomId = generateRoomID([senderId, receiverId]);
-        console.log('roomId', roomId);
-        let room = await RoomModel.findOne({
-          participants: { $all: [senderId, receiverId] },
-        });
-        if (!room) {
-          room = await RoomModel.create({ roomId, participants: [senderId, receiverId] });
-        } else {
-          await ChatModel.updateMany(
-            { roomId: room.roomId, senderId: new ObjectId(receiverId), isSeen: false },
-            { $set: { isSeen: true } },
-            { new: true }
-          );
+        if (type === 'group') {
+          // Join group chat
+          socket.join(chatId);
+          console.log(`User ${senderId} has joined the group chat room ${chatId}.`);
+    
+          // Fetch previous group messages
+          const groupMessages = await ChatModel.find({ groupId: chatId, isBlockedMessage: false })
+            .sort({ createdAt: -1 });
+    
+          // Send the group message history
+          socket.emit('messageHistory', groupMessages.reverse());
+        } else if (type === 'individual') {
+          // Handle individual chat
+          const roomId = generateRoomID([senderId, chatId]);
+          let room = await RoomModel.findOne({
+            participants: { $all: [senderId, chatId] },
+          });
+    
+          if (!room) {
+            // Create a new room if it doesn't exist
+            room = await RoomModel.create({ roomId, participants: [senderId, chatId] });
+          }
+    
+          // Join the individual chat room
+          socket.join(room.roomId);
+          console.log(`User ${senderId} has joined the individual chat room ${room.roomId}.`);
+    
+          // Fetch previous individual messages
+          const messages = await ChatModel.find({ roomId: room.roomId, isBlockedMessage: false })
+            .sort({ createdAt: -1 });
+    
+          // Send the individual message history
+          socket.emit('messageHistory', messages.reverse());
         }
-        socket.join(room.roomId);
-        io.to(roomId).emit('userJoined', `"i m" has joined the room`);
-        // Fetch previous messages in the room
-        const messages = await ChatModel.find({ roomId: room.roomId, isBlockedMessage: false })
-          .sort({ createdAt: -1 })
-          // .limit(10);
-        socket.emit('messageHistory', messages.reverse());
-        const chats = await getChatsService({ limit: 1000, page: 1 }, senderId);
-        console.log('chats', chats);
-        socket.emit('getChats', chats);
       } catch (error) {
-        console.error('Error on join:', error);
+        console.error('Error on joinChat:', error);
       }
     });
-    socket.on('sendMessage', async ({ senderId, receiverId, message,fileType,caption }) => {
+    
+    socket.on('sendMessage', async ({ senderId, chatId, message, fileType, caption, type }) => {
       try {
-        console.log('lof for send message ', { senderId, receiverId, message,fileType });
-        let room = await RoomModel.findOne({
-          participants: { $all: [senderId, receiverId] },
-        });
-        console.log(' room.roomId', room.roomId);
-        const msg = await ChatModel.create({ roomId: room.roomId, senderId, receiverId, message,fileType,caption });
-        io.to(room.roomId).emit('receiveMessage', { senderId, message, createdAt: msg.createdAt,fileType });
-        const senderChats = await getChatsService({ limit: 1000, page: 1 }, senderId);
-        const receiverChats = await getChatsService({ limit: 1000, page: 1 }, receiverId);
-
-        console.log('chats-------0', senderChats, receiverChats);
-        io.to(senderId).emit('getChats', senderChats);
-        io.to(receiverId).emit('getChats', receiverChats);
+        if (type === 'group') {
+          // Handle sending a group message
+          const msg = await ChatModel.create({
+            groupId: chatId,
+            senderId,
+            message,
+            fileType,
+            caption
+          });
+    
+          // Emit the message to the group room
+          io.to(chatId).emit('receiveMessage', {
+            senderId,
+            message,
+            fileType,
+            caption,
+            createdAt: msg.createdAt,
+            type: 'group'
+          });
+        } else if (type === 'individual') {
+          // Handle sending an individual message
+          let room = await RoomModel.findOne({
+            participants: { $all: [senderId, chatId] },
+          });
+    
+          if (!room) {
+            room = await RoomModel.create({ participants: [senderId, chatId] });
+          }
+    
+          const msg = await ChatModel.create({
+            roomId: room.roomId,
+            senderId,
+            receiverId: chatId,
+            message,
+            fileType,
+            caption
+          });
+    
+          // Emit the message to both the sender and receiver's rooms
+          io.to(room.roomId).emit('receiveMessage', {
+            senderId,
+            message,
+            fileType,
+            caption,
+            createdAt: msg.createdAt,
+            type: 'individual'
+          });
+        }
       } catch (error) {
         console.error('Error on sendMessage:', error);
       }
     });
+    
     socket.on('getAllChats', async ({ senderId, limit = 1000, page = 1, type }) => {
       try {
         const chats = await getChatsService({ limit, page, type }, senderId);
@@ -128,6 +174,22 @@ module.exports = function (io) {
     console.error('Error creating group:', error);
   }
 });
+// User joins a group chat
+socket.on('joinGroup', async ({ userId, groupId }) => {
+  try {
+    // Join the group room
+    socket.join(groupId);
+    console.log(`User ${userId} has joined the group room ${groupId}.`);
+
+    // Fetch the previous messages for the group
+    const groupMessages = await ChatModel.find({ groupId})
+      .sort({ createdAt: -1 });
+    socket.emit('groupMessageHistory', groupMessages.reverse());
+  } catch (error) {
+    console.error('Error on joinGroup:', error);
+  }
+});
+
 
 socket.on('respondToGroupInvitation', async ({ userId, groupId, response }) => {
   try {
