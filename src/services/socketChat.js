@@ -100,7 +100,7 @@ module.exports = function (io) {
       }
     });
 
-    socket.on('createGroup', async ({ adminId, groupName, memberIds }) => {
+    socket.on('createGroup', async ({ adminId, groupName, memberIds,image }) => {
   try {
     // Generate a unique group ID
     const groupId = generateRoomID([adminId, groupName]);
@@ -109,6 +109,7 @@ module.exports = function (io) {
     const group = await GroupModel.create({
       groupId,
       groupName,
+      image,
       adminId,
       members: memberIds.map(userId => ({ userId, status: 'pending' })),
     });
