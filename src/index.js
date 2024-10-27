@@ -8,7 +8,6 @@ const socketIo = require('socket.io');
 const socketHandler = require('../src/services/socketChat'); 
 const ObjectId = mongoose.Types.ObjectId;
 
-const efef = require('./services/chatHandler').getChatsService({ limit: 10 },  ObjectId('67152dc6b29d665c1bcfb48f'));
 
 // Create HTTP server using Express app
 const server = http.createServer(app);
