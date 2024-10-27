@@ -18,7 +18,7 @@ router.post('/forgot-pin', validate(authValidation.forgotPin), authController.fo
 router.post('/loginWithPin', auth(), validate(authValidation.loginWithPin), authController.loginWithPin);
 router.put('/upload-document', auth(), upload.array('uploadDocument', 5), authController.uploadUserDocument);
 router.get('/fetchUser',auth(),  authController.fetchUser);
-router.get('/fetchOtherUser/:id',auth(),  authController.fetchOtherUser);
+router.get('/fetchOtherUser/:id/:type',  authController.fetchOtherUser);
 router.post('/uploadFiles', auth(), upload.array('uploadDocument', 1), authController.uploadFiles);
 router.get('/getAllUsers',auth(), authController.getAllUsers);
 router.post('/updateUserProfile', auth(), upload.single('userProfileImage'), authController.updateUserProfile);

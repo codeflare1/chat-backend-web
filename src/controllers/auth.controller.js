@@ -6,6 +6,7 @@ const { User } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { sendSMS,verifyOTP2 } = require('../config/aws-messaging');
 const UserModel = require('../models/user.model')
+const GroupModel = require('../models/groupModel')
 const register = catchAsync(async (req, res) => {
   const file = req.file;
   let imageURI;
@@ -174,9 +175,28 @@ const fetchUser = async (req, res) => {
 };
 
 const fetchOtherUser = async (req, res) => {
-  const user = await authService.fetchOtherUser(req);
+  let user
+  if(req.params.type=='group'){
+    user = await GroupModel.findOne({ groupId: req.params.id })
+    .populate({
+      path: 'members.userId',
+      select: '_id firstName lastName email image' 
+    })
+    .exec();
+
+  if (!user) {
+    return res.status(httpStatus.NOT_FOUND).send({ success: false, message: 'Group not found' });
+  }
+
+  res.status(httpStatus.OK).send({ success: true, user });
+
+  }
+   user = await authService.fetchOtherUser(req);
+
   res.status(httpStatus.OK).send({ success: true, user });
 };
+
+
 
 const uploadFiles = catchAsync(async (req, res) => {
   try {

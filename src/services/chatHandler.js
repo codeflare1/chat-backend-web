@@ -70,7 +70,7 @@ const getChatsService = async (query, userId) => {
             }
           },
           {
-            $project: { firstName: 1, lastName: 1, image: 1 }
+            $project: { firstName: 1, lastName: 1, image: 1, chatType: { $literal: "individual" } }
           }
         ],
         as: 'user'
@@ -114,7 +114,10 @@ const getChatsService = async (query, userId) => {
               user: {
                 firstName: '$groupName',
                 lastName: null,
-                image: '$image'
+                image: '$image',
+                _id:'$groupId',
+                chatType: { $literal: "group" },
+
               }
 
             }
