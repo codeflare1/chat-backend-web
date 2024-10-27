@@ -97,8 +97,60 @@ module.exports = function (io) {
         console.error('Error on getAllUser:', error);
       }
     });
+
+    socket.on('createGroup', async ({ adminId, groupName, memberIds }) => {
+  try {
+    // Generate a unique group ID
+    const groupId = generateRoomID([adminId, groupName]);
+    
+    // Create the group in the database
+    const group = await GroupModel.create({
+      groupId,
+      groupName,
+      adminId,
+      members: memberIds.map(userId => ({ userId, status: 'pending' })),
+    });
+
+    // Notify each member about the group invitation
+    memberIds.forEach(memberId => {
+      io.to(memberId).emit('groupInvitation', {
+        groupId,
+        groupName,
+        message: `You have been invited to join the group: ${groupName}. Please accept or reject the invitation.`,
+      });
+    });
+
+    console.log(`Group ${groupName} created with ID ${groupId} by admin ${adminId}`);
+  } catch (error) {
+    console.error('Error creating group:', error);
+  }
+});
+
+socket.on('respondToGroupInvitation', async ({ userId, groupId, response }) => {
+  try {
+    // Update the member's status in the group
+    const group = await GroupModel.findOneAndUpdate(
+      { groupId, 'members.userId': userId },
+      { $set: { 'members.$.status': response } },
+      { new: true }
+    );
+
+    if (response === 'accepted') {
+      // Notify the group members about the acceptance
+      io.to(groupId).emit('groupUpdate', { userId, message: 'User has accepted the invitation.' });
+
+      
+    } else {
+      // Notify the admin about the rejection
+      io.to(group.adminId).emit('groupUpdate', { userId, message: 'User has rejected the invitation.' });
+    }
+  } catch (error) {
+    console.error('Error responding to group invitation:', error);
+  }
+});
     socket.on('disconnect', async () => {
       console.log('Client disconnected', socket.id);
     });
+
   });
 };
