@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const RoomModel = require('../models/roomModel');
 const ChatModel = require('../models/chatModel');
 const UserModel = require('../models/user.model');
+const GroupModel = require('../models/groupModel');
+
 const ObjectId = mongoose.Types.ObjectId;
 const {getChatsService,getUsersService} = require('./chatHandler')
 const generateRoomID = (room) => {
