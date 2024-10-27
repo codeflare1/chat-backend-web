@@ -99,7 +99,7 @@ const getChatsService = async (query, userId) => {
           },
           {
             $addFields: {
-              lastGroupMessage: { $arrayElemAt: [ { $slice: [ "$groupMessages", -1 ] }, 0 ] }
+              lastMessage: { $arrayElemAt: [ { $slice: [ "$groupMessages", -1 ] }, 0 ] }
             }
           },
           {
@@ -110,7 +110,13 @@ const getChatsService = async (query, userId) => {
               image: '$image',
               createdAt: '$createdAt',
               chatType: { $literal: "group" },
-              lastGroupMessage: 1
+              lastMessage: 1, 
+              user: {
+                firstName: '$groupName',
+                lastName: null,
+                image: '$image'
+              }
+
             }
           }
         ]
