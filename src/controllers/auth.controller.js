@@ -6,7 +6,8 @@ const { User } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { sendSMS,verifyOTP2 } = require('../config/aws-messaging');
 const UserModel = require('../models/user.model')
-const GroupModel = require('../models/groupModel')
+const GroupModel = require('../models/groupModel');
+const { data } = require('../config/logger');
 const register = catchAsync(async (req, res) => {
   const file = req.file;
   let imageURI;
@@ -300,8 +301,17 @@ const updateUserProfile = async (req, res) => {
     return res.status(httpStatus.NOT_FOUND).send({ message: 'User not found' });
   }
 
-  res.status(httpStatus.OK).send(user);
+  res.status(httpStatus.OK).send({message:"Success",data:user});
 };
+
+const getFilesInChat = async(req,res)=>{
+  try{
+
+  }catch (err) {
+    console.log("err ------ ", err);
+
+  }
+}
 
 
 
