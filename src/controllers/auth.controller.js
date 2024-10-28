@@ -7,6 +7,7 @@ const ApiError = require('../utils/ApiError');
 const { sendSMS,verifyOTP2 } = require('../config/aws-messaging');
 const UserModel = require('../models/user.model')
 const GroupModel = require('../models/groupModel');
+const ChatModel = require('../models/chatModel');
 const { data } = require('../config/logger');
 const register = catchAsync(async (req, res) => {
   const file = req.file;
@@ -298,20 +299,40 @@ const updateUserProfile = async (req, res) => {
   );
 
   if (!user) {
-    return res.status(httpStatus.NOT_FOUND).send({ message: 'User not found' });
+    return res.status(httpStatus.NOT_FOUND).send({success: false, message: 'User not found' });
   }
 
-  res.status(httpStatus.OK).send({message:"Success",data:user});
+  res.status(httpStatus.OK).send({success: true,message:"Success",data:user});
 };
 
-const getFilesInChat = async(req,res)=>{
-  try{
+const getFilesInChat = async (req, res) => {
+  try {
+    const { chatId, type } = req.body;
+    let findChat;
 
-  }catch (err) {
-    console.log("err ------ ", err);
+    if (type === 'group') {
+      findChat = await ChatModel.find({
+        groupId: chatId,
+        fileType: { $ne: null },
+      });
+    } else {
+      findChat = await ChatModel.find({
+        roomId: chatId,
+        fileType: { $ne: null }, 
+      });
+    }
 
+    if (!findChat) {
+      return res.status(404).json({success: false, message: 'Chat not found or no files available' });
+    }
+
+    res.status(200).json({ chat: findChat,message:"Success",success: true });
+  } catch (err) {
+    console.error("Error fetching chat:", err);
+    res.status(500).json({ message: 'Internal server error' });
   }
-}
+};
+
 
 
 
@@ -335,5 +356,6 @@ module.exports = {
   fetchOtherUser,
   uploadFiles,
   getAllUsers,
-  updateUserProfile
+  updateUserProfile,
+  getFilesInChat
 };

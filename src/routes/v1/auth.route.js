@@ -22,6 +22,7 @@ router.get('/fetchOtherUser/:id/:type',  authController.fetchOtherUser);
 router.post('/uploadFiles', auth(), upload.array('uploadDocument', 1), authController.uploadFiles);
 router.get('/getAllUsers',auth(), authController.getAllUsers);
 router.post('/updateUserProfile', auth(), upload.single('userProfileImage'), authController.updateUserProfile);
+router.post('/getFilesInChat', auth(),authController.getFilesInChat);
 
 
 
