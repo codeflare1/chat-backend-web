@@ -26,7 +26,7 @@ module.exports = function (io) {
           console.log(`User ${senderId} has joined the group chat room ${chatId}.`);
     
           // Fetch previous group messages
-          const groupMessages = await ChatModel.find({ groupId: chatId, isBlockedMessage: false })
+          const messages = await ChatModel.find({ groupId: chatId })
           .populate('senderId','firstName lastName image')
             .sort({ createdAt: -1 });
             let transformedMessages = messages.map(message => {
@@ -55,7 +55,7 @@ module.exports = function (io) {
           console.log(`User ${senderId} has joined the individual chat room ${room.roomId}.`);
     
           // Fetch previous individual messages
-          const messages = await ChatModel.find({ roomId: room.roomId, isBlockedMessage: false })
+          const messages = await ChatModel.find({ roomId: room.roomId })
           .populate('senderId','firstName lastName image')
             .sort({ createdAt: -1 });
             let transformedMessages = messages.map(message => {
