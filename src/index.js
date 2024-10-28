@@ -7,12 +7,16 @@ const http = require('http');
 const socketIo = require('socket.io');
 const socketHandler = require('../src/services/socketChat'); 
 const ObjectId = mongoose.Types.ObjectId;
-
-app.use(cors({
+const corsOptions = {
   origin: 'https://gatsbychat.com', // Allow only this origin
-  methods: 'GET,POST,PUT,DELETE',
-  credentials: true
-}));
+  methods: 'GET,POST,PUT,DELETE,OPTIONS',
+  allowedHeaders: 'Authorization, Content-Type, Accept',
+  credentials: true,
+};
+
+// Enable CORS for all routes
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Enable pre-flight requests for all routes
 
 // Create HTTP server using Express app
 const server = http.createServer(app);
