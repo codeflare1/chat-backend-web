@@ -33,6 +33,11 @@ const chatsSchema = new mongoose.Schema({
     required:false,
     default:null
   },
+  chatType:{
+    type:String,
+    required:false,
+    default:null
+  },
   isSeen:{
     type:Boolean,
     required:false,

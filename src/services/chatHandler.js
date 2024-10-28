@@ -15,8 +15,9 @@ const getChatsService = async (query, userId) => {
     $or: [
       { senderId: new ObjectId(userId) },
       { receiverId: new ObjectId(userId) }
-    ]
-  };
+    ],
+    groupId: null
+    };
 
   let data, totalRecord;
   data = await ChatModel.aggregate([

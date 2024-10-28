@@ -82,7 +82,8 @@ module.exports = function (io) {
             senderId,
             message,
             fileType,
-            caption
+            caption,
+            chatType:'group'
           });
     
           // Emit the message to the group room
@@ -110,7 +111,9 @@ module.exports = function (io) {
             receiverId: chatId,
             message,
             fileType,
-            caption
+            caption,
+            chatType:'individual'
+
           });
     
           // Emit the message to both the sender and receiver's rooms
