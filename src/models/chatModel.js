@@ -5,12 +5,12 @@ const chatsSchema = new mongoose.Schema({
   senderId:{
     type :mongoose.Schema.Types.ObjectId,
     required:true,
-    ref : 'users'
+    ref : 'User'
   },
   receiverId:{
     type :mongoose.Schema.Types.ObjectId,
     required:false,
-    ref : 'users'
+    ref : 'User'
   },
   groupId: {  type:String,
     required:false
