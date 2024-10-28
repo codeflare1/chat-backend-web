@@ -12,7 +12,9 @@ const chatsSchema = new mongoose.Schema({
     required:false,
     ref : 'users'
   },
-  groupId: { type: mongoose.Schema.Types.ObjectId, ref: 'Group' }, 
+  groupId: {  type:String,
+    required:false
+  }, 
   message:{
     type:String,
     required:true,
@@ -44,9 +46,7 @@ const chatsSchema = new mongoose.Schema({
 },{
   timestamps:true
 });
-/**
- * @typedef User
- */
+
 const Chats = mongoose.model('chats',chatsSchema);
 
 module.exports = Chats;
