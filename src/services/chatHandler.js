@@ -99,7 +99,14 @@ const getChatsService = async (query, userId) => {
           },
           {
             $addFields: {
-              lastMessage: { $arrayElemAt: [ { $slice: [ "$groupMessages", -1 ] }, 0 ] }
+              lastMessage: {
+                $arrayElemAt: [ { $slice: [ "$groupMessages", -1 ] }, 0 ]
+              }
+            }
+          },
+          {
+            $addFields: {
+              lastMessage: "$lastMessage.message" // Extracting only the message field
             }
           },
           {
@@ -111,6 +118,7 @@ const getChatsService = async (query, userId) => {
               createdAt: '$createdAt',
               chatType: { $literal: "group" },
               lastMessage: 1, 
+
               user: {
                 firstName: '$groupName',
                 lastName: null,
