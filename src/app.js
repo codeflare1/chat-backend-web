@@ -15,16 +15,7 @@ const { errorConverter, errorHandler } = require('./middlewares/error');
 const ApiError = require('./utils/ApiError');
 const app = express();
 
-const corsOptions = {
-  origin: 'https://gatsbychat.com', // Allow only this origin
-  methods: 'GET,POST,PUT,DELETE,OPTIONS',
-  allowedHeaders: 'Authorization, Content-Type, Accept',
-  credentials: true,
-};
-
-// Enable CORS for all routes
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // Enable pre-flight requests for all routes
+app.use(cors({ origin: '*' })); // Adjust the port to match your React app
 
 if (config.env !== 'test') {
   app.use(morgan.successHandler);
