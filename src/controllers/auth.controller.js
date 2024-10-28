@@ -177,6 +177,7 @@ const fetchUser = async (req, res) => {
 };
 
 const fetchOtherUser = async (req, res) => {
+  try{
   let user
   if(req.params.type=='group'){
     user = await GroupModel.findOne({ groupId: req.params.id })
@@ -196,6 +197,9 @@ const fetchOtherUser = async (req, res) => {
    user = await authService.fetchOtherUser(req);
 
   res.status(httpStatus.OK).send({ success: true, user });
+  }catch(err){
+    console.log(err)
+  }
 };
 
 
@@ -309,7 +313,17 @@ const getFilesInChat = async (req, res) => {
   try {
     const { chatId, type } = req.body;
     let findChat;
-
+    let x =  await ChatModel.find({ roomId: '67169a05b29d665c1bcfc076_67167ed0b29d665c1bcfbbcb', isBlockedMessage: false })
+    .populate('senderId','firstName lastName image')
+      .sort({ createdAt: -1 });
+      let transformedMessages = x.map(message => {
+        return {
+          ...message.toObject(),
+          user: message.senderId, // populated user object
+          senderId: message.senderId._id // only the ID
+        };
+      });
+      console.log(transformedMessages)
     if (type === 'group') {
       findChat = await ChatModel.find({
         groupId: chatId,
