@@ -27,11 +27,17 @@ module.exports = function (io) {
     
           // Fetch previous group messages
           const groupMessages = await ChatModel.find({ groupId: chatId, isBlockedMessage: false })
-          .populate('senderId','firstName lastName image _id')
+          .populate('senderId','firstName lastName image')
             .sort({ createdAt: -1 });
-    
+            let transformedMessages = messages.map(message => {
+              return {
+                ...message.toObject(),
+                user: message.senderId, // populated user object
+                senderId: message.senderId._id // only the ID
+              };
+            });
           // Send the group message history
-          socket.emit('messageHistory', groupMessages.reverse());
+          socket.emit('messageHistory', transformedMessages.reverse());
         } else if (type === 'individual') {
           // Handle individual chat
           const roomId = generateRoomID([senderId, chatId]);
@@ -50,11 +56,17 @@ module.exports = function (io) {
     
           // Fetch previous individual messages
           const messages = await ChatModel.find({ roomId: room.roomId, isBlockedMessage: false })
-          .populate('senderId','firstName lastName image _id')
+          .populate('senderId','firstName lastName image')
             .sort({ createdAt: -1 });
-    
+            let transformedMessages = messages.map(message => {
+              return {
+                ...message.toObject(),
+                user: message.senderId, // populated user object
+                senderId: message.senderId._id // only the ID
+              };
+            });
           // Send the individual message history
-          socket.emit('messageHistory', messages.reverse());
+          socket.emit('messageHistory', transformedMessages.reverse());
         }
       } catch (error) {
         console.error('Error on joinChat:', error);
