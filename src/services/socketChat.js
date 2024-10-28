@@ -27,7 +27,7 @@ module.exports = function (io) {
     
           // Fetch previous group messages
           const groupMessages = await ChatModel.find({ groupId: chatId, isBlockedMessage: false })
-          .populate('senderId')
+          .populate('senderId','firstName lastName image _id')
             .sort({ createdAt: -1 });
     
           // Send the group message history
@@ -50,7 +50,7 @@ module.exports = function (io) {
     
           // Fetch previous individual messages
           const messages = await ChatModel.find({ roomId: room.roomId, isBlockedMessage: false })
-          .populate('senderId')
+          .populate('senderId','firstName lastName image _id')
             .sort({ createdAt: -1 });
     
           // Send the individual message history
