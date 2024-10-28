@@ -8,6 +8,11 @@ const socketIo = require('socket.io');
 const socketHandler = require('../src/services/socketChat'); 
 const ObjectId = mongoose.Types.ObjectId;
 
+app.use(cors({
+  origin: 'https://gatsbychat.com', // Allow only this origin
+  methods: 'GET,POST,PUT,DELETE',
+  credentials: true
+}));
 
 // Create HTTP server using Express app
 const server = http.createServer(app);
